@@ -49,7 +49,8 @@ function updateCalc() {
   if (cost) {
     animateValue('udlejning', cost);
     animateValue('totalCost', tot);
-    drawPieChart([rev - cost, cost, maint]);
+    // Set profit slice to 16860
+    drawPieChart([16860, cost, maint]);
     document.getElementById('btn-3').style.display = 'block';
   }
   const net = rev - tot;
@@ -72,19 +73,18 @@ function updateCalc() {
   }
 }
 
-function animateValue(id, target) {
+function animateValue(id, value) {
   const el = document.getElementById(id);
-  let current = 0;
-  const step = target / 60;
+  let cur = 0;
+  const step = value / 60;
   el.classList.add('count-animation');
   const timer = setInterval(() => {
-    current += step;
-    if (current >= target) {
+    cur = Math.min(cur + step, value);
+    if (cur === value) {
       clearInterval(timer);
-      current = target;
       setTimeout(() => el.classList.remove('count-animation'), 100);
     }
-    el.textContent = `${el.textContent.split(':')[0]}: ${Math.round(current).toLocaleString('da-DK')} EUR`;
+    el.textContent = `${el.textContent.split(':')[0]}: ${Math.round(cur).toLocaleString('da-DK')} EUR`;
   }, 16);
 }
 
