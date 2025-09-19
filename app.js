@@ -1,168 +1,88 @@
-// Auto-set date
+// Auto-date
 document.getElementById('date').valueAsDate = new Date();
 
-// Collect sections and breadcrumbs
-const sections = Array.from(document.querySelectorAll('.section'));
-const crumbs = Array.from(document.querySelectorAll('.crumb'));
-
-// Initialize: show only section 1 and breadcrumb 1
-sections.forEach((sec, i) => sec.classList.toggle('active', i === 0));
-crumbs.forEach((c, i) => c.classList.toggle('active', i === 0));
-
-function showSection(index) {
-  // Activate breadcrumb and section without hiding previous ones
-  sections[index - 1].classList.add('active');
-  crumbs[index - 1].classList.add('active');
-  sections[index - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
-  if (index === 7) setTimeout(initCharts, 500);
+// Sections & steps
+const panels = document.querySelectorAll('.panel');
+const steps = document.querySelectorAll('.step');
+function show(i) {
+  panels[i].classList.add('active');
+  steps[i].classList.add('active');
+  panels[i].scrollIntoView({behavior:'smooth'});
 }
-
-// Attach next-button handlers
-for (let i = 1; i <= 6; i++) {
-  document.getElementById(`btn-${i}`).onclick = () => showSection(i + 1);
-}
-
-// Enable first next button when Name is entered
-document.getElementById('name').oninput = function() {
-  document.getElementById('btn-1').style.display =
-    this.value.trim() ? 'block' : 'none';
-};
-
-// Calculation inputs
-['prisPrNat','lejedeNaetter','diskonto'].forEach(id => {
-  document.getElementById(id).oninput = updateCalc;
+show(0);
+document.querySelectorAll('.btn').forEach((btn, idx) => {
+  btn.addEventListener('click', () => show(idx+1));
 });
 
-let pieChart, histChart;
+// Enable first button
+document.getElementById('name').addEventListener('input', function(){
+  document.getElementById('btn-1').style.display =
+    this.value.trim() ? 'block' : 'none';
+});
 
-function updateCalc() {
-  const pris = +document.getElementById('prisPrNat').value || 0;
-  const nat = +document.getElementById('lejedeNaetter').value || 0;
-  const rev = pris * nat;
-  if (rev) {
-    animateValue('brutto', rev);
-    document.getElementById('btn-2').style.display = 'block';
+// Calculations
+['prisPrNat','lejedeNaetter','diskonto'].forEach(id =>
+  document.getElementById(id).addEventListener('input', update)
+);
+
+let pieC, histC;
+
+function update() {
+  const p=+prisPrNat.value||0, n=+lejedeNaetter.value||0;
+  const rev=p*n;
+  if(rev){animate('brutto',rev); btn2.style.display='block';}
+  const cost=rev*0.2, m=660, tot=cost+m;
+  if(cost){
+    animate('udlejning',cost);
+    animate('totalCost',tot);
+    drawPie([16860,cost,m]);
+    btn3.style.display='block';
   }
-  const cost = rev * 0.2;
-  const maint = 660;
-  const tot = cost + maint;
-  if (cost) {
-    animateValue('udlejning', cost);
-    animateValue('totalCost', tot);
-    // Set profit slice to 16860
-    drawPieChart([16860, cost, maint]);
-    document.getElementById('btn-3').style.display = 'block';
-  }
-  const net = rev - tot;
-  if (net) {
-    animateValue('netto', net);
-    document.getElementById('btn-4').style.display = 'block';
-  }
-  const disc = +document.getElementById('diskonto').value || 0;
-  if (disc && net) {
-    const exitPrice = net / (disc / 100);
-    animateValue('exitPrice', exitPrice);
-    const delta = exitPrice - 143000;
-    animateWithDKK('delta', delta);
-    const cash3 = net * 3;
-    animateWithDKK('cash3', cash3);
-    const totalRet = cash3 + delta;
-    animateWithDKK('totalReturn', totalRet);
-    document.getElementById('btn-5').style.display = 'block';
-    document.getElementById('btn-6').style.display = 'block';
+  const net=rev-tot;
+  if(net){animate('netto',net); btn4.style.display='block';}
+  const d=+diskonto.value||0;
+  if(d&&net){
+    const ep=net/(d/100);
+    animate('exitPrice',ep);
+    const delta=ep-143000, c3=net*3, tr=c3+delta;
+    animate('delta',delta);
+    animate('cash3',c3);
+    animate('totalReturn',tr);
+    btn5.style.display='block'; btn6.style.display='block';
+    setTimeout(charts,300);
   }
 }
 
-function animateValue(id, value) {
-  const el = document.getElementById(id);
-  let cur = 0;
-  const step = value / 60;
-  el.classList.add('count-animation');
-  const timer = setInterval(() => {
-    cur = Math.min(cur + step, value);
-    if (cur === value) {
-      clearInterval(timer);
-      setTimeout(() => el.classList.remove('count-animation'), 100);
-    }
-    el.textContent = `${el.textContent.split(':')[0]}: ${Math.round(cur).toLocaleString('da-DK')} EUR`;
-  }, 16);
+function animate(id,val){
+  const el=document.getElementById(id);
+  let c=0,step=val/60;el.classList.add('count-animation');
+  const t=setInterval(()=>{
+    c=Math.min(c+step,val);
+    el.textContent=`${el.textContent.split(':')[0]}: ${Math.round(c).toLocaleString('da-DK')} EUR`;
+    if(c>=val){clearInterval(t);el.classList.remove('count-animation');}
+  },16);
 }
 
-function animateWithDKK(id, value) {
-  animateValue(id, value);
-  setTimeout(() => {
-    document.getElementById(id + 'DKK').textContent =
-      `(${Math.round(value * 7.44).toLocaleString('da-DK')} DKK)`;
-  }, 1000);
-}
-
-function drawPieChart(data) {
-  const ctx = document.getElementById('pieChart').getContext('2d');
-  if (pieChart) pieChart.destroy();
-  pieChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['Profit','Udlejning','Vedl.'],
-      datasets: [{
-        data,
-        backgroundColor: ['#00FF66','#FFA500','#1A3E65']
-      }]
-    },
-    options: {
-      plugins: { legend: { labels: { color: '#fff' } } },
-      animation: { animateScale: true, duration: 800 },
-      hoverOffset: 15
-    }
+function drawPie(arr){
+  const ctx=pieC=document.getElementById('pieChart').getContext('2d');
+  if(pieC) pieC.destroy();
+  pieC=new Chart(ctx,{
+    type:'doughnut',
+    data:{labels:['Profit','Udlejning','Vedl.'], datasets:[{data:arr,backgroundColor:['#00FF66','#FFA500','#1A3E65']}]},
+    options:{plugins:{legend:{labels:{color:'#fff'}}},animation:{duration:600}}
   });
 }
 
-function initCharts() {
-  const netVal = +document.getElementById('netto').textContent.replace(/\D/g,'') || 0;
-  // Histogram
-  const hctx = document.getElementById('histogram').getContext('2d');
-  if (histChart) histChart.destroy();
-  histChart = new Chart(hctx, {
-    type: 'bar',
-    data: {
-      labels: ['År 1','År 2','År 3'],
-      datasets: [{ data: [netVal, netVal * 2, netVal * 3], backgroundColor: '#1A3E65' }]
-    },
-    options: {
-      plugins: { legend: { display: false } },
-      scales: { x: { ticks: { color: '#fff' } }, y: { ticks: { color: '#fff' } } },
-      animation: { duration: 1200, easing: 'easeInOutCubic' }
-    }
-  });
-  // Line chart
-  const lctx = document.getElementById('lineChart').getContext('2d');
-  new Chart(lctx, {
-    type: 'line',
-    data: {
-      labels: ['År 1','År 2','År 3'],
-      datasets: [{
-        data: [netVal, netVal * 2, netVal * 3],
-        borderColor: '#00FF66',
-        backgroundColor: 'rgba(0,255,102,0.2)',
-        fill: true,
-        tension: 0.3,
-        pointBackgroundColor: '#00FF66',
-        pointHoverRadius: 8
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        x: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } },
-        y: {
-          ticks: { color: '#fff', callback: v => v.toLocaleString('da-DK') + ' EUR' },
-          grid: { color: 'rgba(255,255,255,0.1)' }
-        }
-      },
-      plugins: { legend: { display: false } },
-      animation: { duration: 1500, easing: 'easeInOutExpo' }
-    }
-  });
+function charts(){
+  const net=+netto.textContent.replace(/\D/g,'')||0;
+  // histogram
+  const hc=document.getElementById('histogram').getContext('2d');
+  if(histC) histC.destroy();
+  histC=new Chart(hc,{type:'bar',data:{labels:['År1','År2','År3'],datasets:[{data:[net,net*2,net*3],backgroundColor:'#1A3E65'}]},options:{animation:{duration:800}}});
+  // line
+  const lc=document.getElementById('lineChart').getContext('2d');
+  new Chart(lc,{type:'line',data:{labels:['År1','År2','År3'],datasets:[{data:[net,net*2,net*3],borderColor:'#00FF66',fill:true,backgroundColor:'rgba(0,255,102,0.2)',tension:0.3,pointBackgroundColor:'#00FF66'}]},options:{animation:{duration:800}}});
 }
 
-// Initialize
-updateCalc();
+// initialize
+update();
