@@ -670,7 +670,17 @@
         ['prisPrNat', 'lejedeNaetter', 'diskonteringsfaktor'].forEach(id => {
             document.getElementById(id).addEventListener('input', updateCalculations);
         });
-        
+        // Enable “Næste” button when a name is entered
+document.getElementById('name').addEventListener('input', () => {
+  const nameValue = document.getElementById('name').value.trim();
+  const nextBtn = document.querySelector('#section-1 .next-section-btn');
+  if (nameValue !== '') {
+    nextBtn.classList.add('show');
+  } else {
+    nextBtn.classList.remove('show');
+  }
+});
+
         // Initial calculation
         updateCalculations();
     </script>
