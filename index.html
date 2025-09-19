@@ -1,77 +1,86 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>NORDEN CAPITAL GROUP – Transaktionsanalyse</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NORDEN CAPITAL GROUP – Transaktionsanalyse</title>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app">
-    <header class="header">
-      <h1>NORDEN CAPITAL GROUP</h1>
-      <h2>Transaktionsanalyse</h2>
-    </header>
-    <nav class="breadcrumb">
-      <div id="crumb-1" class="crumb active">1. Info</div>
-      <div id="crumb-2" class="crumb">2. Indtægtsberegning</div>
-      <div id="crumb-3" class="crumb">3. Omkostninger</div>
-      <div id="crumb-4" class="crumb">4. Netto</div>
-      <div id="crumb-5" class="crumb">5. Exit</div>
-      <div id="crumb-6" class="crumb">6. Afkast</div>
-      <div id="crumb-7" class="crumb">7. Oversigt</div>
-    </nav>
-    <section id="section-1" class="panel active">
-      <h3>1. Information</h3>
-      <label for="date">Dato</label>
-      <input type="date" id="date">
-      <label for="name">Navn</label>
-      <input type="text" id="name">
-      <button id="btn-1" class="btn">Næste</button>
-    </section>
-    <section id="section-2" class="panel">
-      <h3>2. Indtægtsberegning</h3>
-      <label for="prisPrNat">Pris pr. nat</label>
-      <input type="number" id="prisPrNat" placeholder="EUR">
-      <label for="lejedeNaetter">Lejede nætter/år</label>
-      <input type="number" id="lejedeNaetter" placeholder="nætter">
-      <div id="brutto" class="value green">0 EUR</div>
-      <button id="btn-2" class="btn">Næste</button>
-    </section>
-    <section id="section-3" class="panel">
-      <h3>3. Omkostninger</h3>
-      <div id="udlejning" class="value orange">0 EUR</div>
-      <div id="maintenance" class="value blue">660 EUR</div>
-      <div id="totalCost" class="value orange">0 EUR</div>
-      <canvas id="pieChart" class="chart"></canvas>
-      <button id="btn-3" class="btn">Næste</button>
-    </section>
-    <section id="section-4" class="panel">
-      <h3>4. Netto</h3>
-      <div id="netto" class="value green">0 EUR</div>
-      <button id="btn-4" class="btn">Næste</button>
-    </section>
-    <section id="section-5" class="panel">
-      <h3>5. Exit</h3>
-      <label for="diskonto">Diskonteringsfaktor (%)</label>
-      <input type="number" id="diskonto" placeholder="%">
-      <div id="exitPrice" class="value green">0 EUR</div>
-      <div id="delta" class="value green">0 EUR</div>
-      <button id="btn-5" class="btn">Næste</button>
-    </section>
-    <section id="section-6" class="panel">
-      <h3>6. Akk. afkast</h3>
-      <div id="cash3" class="value green">0 EUR</div>
-      <div id="totalReturn" class="value green">0 EUR</div>
-      <button id="btn-6" class="btn">Se oversigt</button>
-    </section>
-    <section id="section-7" class="panel">
-      <h3>7. Oversigt</h3>
-      <canvas id="histogram" class="chart"></canvas>
-      <canvas id="lineChart" class="chart"></canvas>
-    </section>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="app.js"></script>
+<div class="app-container">
+  <header class="header">
+    <h1>NORDEN CAPITAL GROUP</h1>
+    <h2>Transaktionsanalyse</h2>
+  </header>
+
+  <nav class="breadcrumbs">
+    <div class="crumb active" id="crumb-1">1. Info</div>
+    <div class="crumb" id="crumb-2">2. Indtægtsberegning</div>
+    <div class="crumb" id="crumb-3">3. Omkostninger</div>
+    <div class="crumb" id="crumb-4">4. Netto</div>
+    <div class="crumb" id="crumb-5">5. Exit</div>
+    <div class="crumb" id="crumb-6">6. Afkast</div>
+    <div class="crumb" id="crumb-7">7. Oversigt</div>
+  </nav>
+
+  <section id="section-1" class="section active">
+    <h3>1. Information</h3>
+    <label for="date">Dato:</label>
+    <input type="date" id="date" />
+    <label for="name">Navn:</label>
+    <input type="text" id="name" />
+    <button id="btn-1" class="next-btn">Næste</button>
+  </section>
+
+  <section id="section-2" class="section">
+    <h3>2. Indtægtsberegning</h3>
+    <label for="prisPrNat">Pris pr. nat:</label>
+    <input type="number" id="prisPrNat" placeholder="EUR" />
+    <label for="lejedeNaetter">Lejede nætter pr år:</label>
+    <input type="number" id="lejedeNaetter" placeholder="Nætter" />
+    <div id="brutto" class="value neon-green">Brutto lejeindtægter: 0 EUR</div>
+    <button id="btn-2" class="next-btn">Næste</button>
+  </section>
+
+  <section id="section-3" class="section">
+    <h3>3. Omkostninger</h3>
+    <div id="udlejning" class="value orange">Udlejningsselskab (20%): 0 EUR</div>
+    <div id="maintenance" class="value blue">Vedligeholdelse: 660 EUR</div>
+    <div id="totalCost" class="value orange">Samlede omkostninger: 0 EUR</div>
+    <div class="pie-chart-container"><canvas id="pieChart"></canvas></div>
+    <button id="btn-3" class="next-btn">Næste</button>
+  </section>
+
+  <section id="section-4" class="section">
+    <h3>4. Netto</h3>
+    <div id="netto" class="value neon-green">Netto lejeindtægt: 0 EUR</div>
+    <button id="btn-4" class="next-btn">Næste</button>
+  </section>
+
+  <section id="section-5" class="section">
+    <h3>5. Exit</h3>
+    <label for="diskonto">Diskonteringsfaktor (%):</label>
+    <input type="number" id="diskonto" />
+    <div id="exitPrice" class="value neon-green">Projekteret exit pris: 0 EUR</div>
+    <div id="delta" class="value neon-green">Værdiforøgelse/Delta: 0 EUR</div>
+    <button id="btn-5" class="next-btn">Næste</button>
+  </section>
+
+  <section id="section-6" class="section">
+    <h3>6. Akkumuleret afkast</h3>
+    <div id="cash3" class="value neon-green">Cashflow (3 år): 0 EUR</div>
+    <div id="totalReturn" class="value neon-green">TOTALT AFKAST: 0 EUR</div>
+    <button id="btn-6" class="next-btn">Se oversigt</button>
+  </section>
+
+  <section id="section-7" class="section">
+    <h3>7. Investerings oversigt</h3>
+    <div class="histogram-container"><canvas id="histogram"></canvas></div>
+    <div class="line-chart-container"><canvas id="lineChart"></canvas></div>
+  </section>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
