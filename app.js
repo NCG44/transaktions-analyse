@@ -1,34 +1,40 @@
 // Auto-set date
-const dateInput = document.getElementById('date');
-dateInput.valueAsDate = new Date();
+document.getElementById('date').valueAsDate = new Date();
 
-// Section control and persistent breadcrumbs
-const sections = [...document.querySelectorAll('.section')];
-let current = 1;
-function showSection(i) {
+// Collect sections and breadcrumbs
+const sections = Array.from(document.querySelectorAll('.section'));
+const crumbs = Array.from(document.querySelectorAll('.crumb'));
+sections.forEach(sec => sec.classList.add('active')); 
+// Initially show only section 1
+sections.forEach((sec, i) => { if (i !== 0) sec.classList.remove('active'); });
+crumbs.forEach((c, i) => { if (i !== 0) c.classList.remove('active'); });
+
+function showSection(index) {
   // Activate breadcrumb and section without hiding previous
-  document.getElementById(`crumb-${i}`).classList.add('active');
-  sections[i-1].classList.add('active');
-  current = i;
-  sections[i-1].scrollIntoView({ behavior: 'smooth', block: 'center' });
-  if (i === 7) setTimeout(initCharts, 500);
+  sections[index - 1].classList.add('active');
+  crumbs[index - 1].classList.add('active');
+  sections[index - 1].scrollIntoView({behavior:'smooth', block:'center'});
+  if (index === 7) setTimeout(initCharts, 500);
 }
+
 for (let i = 1; i <= 6; i++) {
-  document.getElementById(`btn-${i}`).onclick = () => showSection(i + 1);
+  document.getElementById(`btn-${i}`).addEventListener('click', () => showSection(i + 1));
 }
 
-// Enable first next button when name entered
-document.getElementById('name').oninput = function() {
-  document.getElementById('btn-1').style.display = this.value.trim() ? 'block' : 'none';
-};
+// Enable first next button when name is entered
+document.getElementById('name').addEventListener('input', function() {
+  document.getElementById('btn-1').style.display =
+    this.value.trim() ? 'block' : 'none';
+});
 
-// Calculation listeners
+// Calculation triggers
 ['prisPrNat', 'lejedeNaetter', 'diskonto'].forEach(id => {
-  document.getElementById(id).oninput = updateCalc;
+  document.getElementById(id).addEventListener('input', updateCalc);
 });
 
 let pieChart, histChart;
 
+// Perform calculations and animate
 function updateCalc() {
   const p = +document.getElementById('prisPrNat').value || 0;
   const n = +document.getElementById('lejedeNaetter').value || 0;
@@ -37,9 +43,7 @@ function updateCalc() {
     animateValue('brutto', rev);
     document.getElementById('btn-2').style.display = 'block';
   }
-  const cost = rev * 0.2;
-  const maint = 660;
-  const tot = cost + maint;
+  const cost = rev * 0.2, maint = 660, tot = cost + maint;
   if (cost) {
     animateValue('udlejning', cost);
     animateValue('totalCost', tot);
@@ -66,26 +70,26 @@ function updateCalc() {
   }
 }
 
-function animateValue(id, value) {
+function animateValue(id, val) {
   const el = document.getElementById(id);
-  let currentVal = 0;
-  const step = value / 60;
+  let cur = 0, step = val / 60;
   el.classList.add('count-animation');
   const timer = setInterval(() => {
-    currentVal += step;
-    if (currentVal >= value) {
+    cur += step;
+    if (cur >= val) {
       clearInterval(timer);
-      currentVal = value;
+      cur = val;
       setTimeout(() => el.classList.remove('count-animation'), 100);
     }
-    el.textContent = `${el.textContent.split(':')[0]}: ${Math.round(currentVal).toLocaleString('da-DK')} EUR`;
+    el.textContent = `${el.textContent.split(':')[0]}: ${Math.round(cur).toLocaleString('da-DK')} EUR`;
   }, 16);
 }
 
-function animateWithDKK(id, value) {
-  animateValue(id, value);
+function animateWithDKK(id, val) {
+  animateValue(id, val);
   setTimeout(() => {
-    document.getElementById(id + 'DKK').textContent = `(${Math.round(value * 7.44).toLocaleString('da-DK')} DKK)`;
+    document.getElementById(id + 'DKK').textContent =
+      `(${Math.round(val * 7.44).toLocaleString('da-DK')} DKK)`;
   }, 1000);
 }
 
@@ -96,10 +100,7 @@ function drawPie(data) {
     type: 'doughnut',
     data: {
       labels: ['Profit', 'Udlejning', 'Vedl.'],
-      datasets: [{
-        data,
-        backgroundColor: ['#00FF66', '#1A3E65', '#0C3C60']
-      }]
+      datasets: [{ data, backgroundColor: ['#00FF66', '#1A3E65', '#0C3C60'] }]
     },
     options: {
       plugins: { legend: { labels: { color: '#fff' } } },
@@ -111,12 +112,13 @@ function drawPie(data) {
 
 function initCharts() {
   const netVal = +document.getElementById('netto').textContent.replace(/\D/g, '') || 0;
+  // Histogram
   const hctx = document.getElementById('histogram').getContext('2d');
   if (histChart) histChart.destroy();
   histChart = new Chart(hctx, {
     type: 'bar',
     data: {
-      labels: ['År 1', 'År 2', 'År 3'],
+      labels: ['År 1','År 2','År 3'],
       datasets: [{ data: [netVal, netVal * 2, netVal * 3], backgroundColor: '#1A3E65' }]
     },
     options: {
@@ -125,11 +127,12 @@ function initCharts() {
       animation: { duration: 1200, easing: 'easeInOutCubic' }
     }
   });
+  // Line chart with milestone animation
   const lctx = document.getElementById('lineChart').getContext('2d');
   new Chart(lctx, {
     type: 'line',
     data: {
-      labels: ['År 1', 'År 2', 'År 3'],
+      labels: ['År 1','År 2','År 3'],
       datasets: [{
         data: [netVal, netVal * 2, netVal * 3],
         borderColor: '#00FF66',
@@ -137,7 +140,8 @@ function initCharts() {
         fill: true,
         tension: 0.3,
         pointBackgroundColor: '#00FF66',
-        pointHoverRadius: 8
+        pointHoverRadius: 8,
+        pointRadius: 6
       }]
     },
     options: {
@@ -145,10 +149,7 @@ function initCharts() {
       scales: {
         x: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } },
         y: {
-          ticks: {
-            color: '#fff',
-            callback: v => v.toLocaleString('da-DK') + ' EUR'
-          },
+          ticks: { color: '#fff', callback: v => v.toLocaleString('da-DK') + ' EUR' },
           grid: { color: 'rgba(255,255,255,0.1)' }
         }
       },
@@ -158,5 +159,5 @@ function initCharts() {
   });
 }
 
-// Initialize on load
+// Initialize
 updateCalc();
