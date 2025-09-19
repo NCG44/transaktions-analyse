@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NORDEN CAPITAL GROUP – Transaktions Analyse</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="header-left">
+        <img src="symbol-2.jpg" alt="Norden Capital Logo" class="logo">
+        <div class="header-text">
+          <h1>NORDEN CAPITAL GROUP</h1>
+          <h2>Transaktions Analyse</h2>
+        </div>
+      </div>
+      <div class="market-ticker">Marked: Ejendom 0,23%</div>
+    </header>
+
+    <nav class="breadcrumb">
+      <span id="crumb-1" class="crumb active">1. Info</span>
+      <span id="crumb-2" class="crumb">2. Indtægtsberegning</span>
+      <span id="crumb-3" class="crumb">3. Omkostninger</span>
+      <span id="crumb-4" class="crumb">4. Netto</span>
+      <span id="crumb-5" class="crumb">5. Exit</span>
+      <span id="crumb-6" class="crumb">6. Afkast</span>
+      <span id="crumb-7" class="crumb">7. Oversigt</span>
+    </nav>
+
+    <!-- Section 1 -->
+    <div id="section-1" class="section active">
+      <h3>1. Information</h3>
+      <label>Dato:</label><input type="date" id="date">
+      <label>Navn:</label><input type="text" id="name" placeholder="">
+      <button id="btn-1" class="next-btn" style="display:none;">Næste: Indtægtsberegning</button>
+    </div>
+
+    <!-- Section 2 -->
+    <div id="section-2" class="section">
+      <h3>2. Indtægtsberegning</h3>
+      <label>Pris pr. nat:</label><input type="number" id="prisPrNat" placeholder="">
+      <label>Lejede nætter om året:</label><input type="number" id="lejedeNaetter" placeholder="">
+      <div id="brutto" class="value green">Brutto lejeindtægter: 0 EUR</div>
+      <button id="btn-2" class="next-btn" style="display:none;">Næste: Driftsomkostninger</button>
+    </div>
+
+    <!-- Section 3 -->
+    <div id="section-3" class="section">
+      <h3>3. Driftsomkostninger</h3>
+      <div class="cost-item blue" id="udlejning">Udlejningsselskab (20%): 0 EUR</div>
+      <div class="cost-item blue">Vedligeholdelse: 660 EUR</div>
+      <div class="cost-item blue" id="totalCost">Samlede omkostninger: 0 EUR</div>
+      <div class="pie-chart-container"><canvas id="pieChart"></canvas></div>
+      <div class="note">Omkostninger er 23% af din omsætning</div>
+      <button id="btn-3" class="next-btn" style="display:none;">Næste: Netto indkomst</button>
+    </div>
+
+    <!-- Section 4 -->
+    <div id="section-4" class="section">
+      <h3>4. Netto indkomst</h3>
+      <div id="netto" class="value green">Netto lejeindtægt: 0 EUR</div>
+      <button id="btn-4" class="next-btn" style="display:none;">Næste: Exit strategi</button>
+    </div>
+
+    <!-- Section 5 -->
+    <div id="section-5" class="section">
+      <h3>5. Exit strategi</h3>
+      <label>Diskonteringsfaktor (%):</label><input type="number" id="diskonto" placeholder="" step="0.1">
+      <div id="exitPrice" class="value green">Projekteret exit pris: 0 EUR</div>
+      <div id="delta" class="value green">Værdiforøgelse/Delta: 0 EUR<br><span id="deltaDKK" class="sub"></span></div>
+      <button id="btn-5" class="next-btn" style="display:none;">Næste: Akkumuleret afkast</button>
+    </div>
+
+    <!-- Section 6 -->
+    <div id="section-6" class="section">
+      <h3>6. Akkumuleret afkast</h3>
+      <div id="cash3" class="value green">Cashflow (3 år): 0 EUR<br><span id="cash3DKK" class="sub"></span></div>
+      <div id="totalReturn" class="value green">TOTALT AFKAST: 0 EUR<br><span id="totalReturnDKK" class="sub"></span></div>
+      <button id="btn-6" class="next-btn" style="display:none;">Se: Investerings oversigt</button>
+    </div>
+
+    <!-- Section 7 -->
+    <div id="section-7" class="section">
+      <h3>7. Investerings oversigt</h3>
+      <div class="line-chart-container"><canvas id="lineChart"></canvas></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
