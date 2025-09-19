@@ -1,8 +1,9 @@
-// Set date to today
-document.getElementById('date').valueAsDate = new Date();
+// Auto-set date
+const dateInput = document.getElementById('date');
+dateInput.valueAsDate = new Date();
 
-// Section management and breadcrumbs
-const sections = document.querySelectorAll('.section');
+// Section control and breadcrumbs
+const sections = [...document.querySelectorAll('.section')];
 let current = 1;
 function showSection(i) {
   sections[current-1].classList.remove('active');
@@ -11,23 +12,23 @@ function showSection(i) {
   sections[current-1].classList.add('active');
   document.getElementById(`crumb-${current}`).classList.add('active');
   sections[current-1].scrollIntoView({behavior:'smooth',block:'center'});
-  if (current === 7) setTimeout(initLineChart,500);
+  if (current === 7) setTimeout(initCharts, 500);
 }
-for (let i=1; i<=6; i++) {
-  document.getElementById(`btn-${i}`).addEventListener('click', () => showSection(i+1));
+for (let i = 1; i <= 6; i++) {
+  document.getElementById(`btn-${i}`).onclick = () => showSection(i+1);
 }
 
 // Enable first next button
-const nameInput = document.getElementById('name');
-nameInput.addEventListener('input', () => {
-  document.getElementById('btn-1').style.display = nameInput.value.trim() ? 'block' : 'none';
+document.getElementById('name').oninput = function() {
+  document.getElementById('btn-1').style.display = this.value.trim() ? 'block' : 'none';
+};
+
+// Calculation triggers
+['prisPrNat','lejedeNaetter','diskonto'].forEach(id => {
+  document.getElementById(id).oninput = updateCalc;
 });
 
-// Calculation listeners
-['prisPrNat','lejedeNaetter','diskonto'].forEach(id =>
-  document.getElementById(id).addEventListener('input', updateCalc)
-);
-let pieChart;
+let pieChart, histChart;
 
 function updateCalc() {
   const p = +document.getElementById('prisPrNat').value || 0;
@@ -37,11 +38,13 @@ function updateCalc() {
     animate('brutto', rev);
     document.getElementById('btn-2').style.display = 'block';
   }
-  const cost = rev * 0.2, maint = 660, tot = cost + maint;
+  const cost = rev * 0.2;
+  const maint = 660;
+  const tot = cost + maint;
   if (cost) {
     animate('udlejning', cost);
     animate('totalCost', tot);
-    drawPie([rev-cost, cost, maint]);
+    drawPieChart([rev-cost, cost, maint]);
     document.getElementById('btn-3').style.display = 'block';
   }
   const net = rev - tot;
@@ -64,43 +67,54 @@ function updateCalc() {
   }
 }
 
-function animate(id, val, suffix=' EUR') {
+function animate(id, value) {
   const el = document.getElementById(id);
-  let cur=0, inc=val/60;
+  let current = 0, step = value / 60;
   el.classList.add('count-animation');
-  const t = setInterval(() => {
-    cur += inc;
-    if (cur >= val) { clearInterval(t); cur = val; setTimeout(() => el.classList.remove('count-animation'), 100); }
-    const txt = `${Math.round(cur).toLocaleString('da-DK')}${suffix}`;
-    el.textContent = el.textContent.split(':')[0] + ': ' + txt;
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= value) { clearInterval(timer); current = value; setTimeout(() => el.classList.remove('count-animation'), 100); }
+    el.textContent = `${el.textContent.split(':')[0]}: ${Math.round(current).toLocaleString('da-DK')} EUR`;
   }, 16);
 }
 
-function animateWithDKK(id, val) {
-  animate(id, val);
+function animateWithDKK(id, value) {
+  animate(id, value);
   setTimeout(() => {
-    document.getElementById(id+'DKK').textContent = `(${Math.round(val*7.44).toLocaleString('da-DK')} DKK)`;
+    document.getElementById(id + 'DKK').textContent = `(${Math.round(value*7.44).toLocaleString('da-DK')} DKK)`;
   }, 1000);
 }
 
-function drawPie(data) {
+function drawPieChart(data) {
   const ctx = document.getElementById('pieChart').getContext('2d');
   if (pieChart) pieChart.destroy();
   pieChart = new Chart(ctx, {
     type: 'doughnut',
-    data: { labels:['Profit','Udlejning','Vedl.'], datasets:[{ data, backgroundColor:['#32CD32','#09B5DA','#0C3C60'] }] },
-    options: { plugins:{ legend:{ labels:{ color:'#fff' }}}, animation:{ animateScale:true, duration:1500 }, hoverOffset:20 }
+    data: { labels: ['Profit', 'Udlejning', 'Vedl.'], datasets: [{ data, backgroundColor: ['#00FF66', '#1A3E65', '#0C3C60'] }] },
+    options: { plugins: { legend: { labels: { color: '#fff' } } }, animation: { animateScale: true, duration: 800 }, hoverOffset: 15 }
   });
 }
 
-function initLineChart() {
-  const ctx = document.getElementById('lineChart').getContext('2d');
-  const net = +document.getElementById('netto').textContent.replace(/\D/g,'')||0;
-  new Chart(ctx, {
-    type:'line', data:{ labels:['År 1','År 2','År 3'], datasets:[{ data:[net,net*2,net*3], borderColor:'#32CD32', tension:0.3, fill:true, backgroundColor:'rgba(50,205,50,0.1)', pointHoverRadius:10, pointHoverBackgroundColor:'#32CD32' }] },
-    options:{ responsive:true, scales:{ x:{ ticks:{ color:'#fff' }, grid:{ color:'rgba(255,255,255,0.1)' } }, y:{ beginAtZero:true, ticks:{ color:'#fff', callback:v=>v.toLocaleString('da-DK')+' EUR' }, grid:{ color:'rgba(255,255,255,0.1)' } } }, plugins:{ legend:{ labels:{ color:'#fff' }}}, animation:{ duration:2000 } }
+function initCharts() {
+  const revNet = +document.getElementById('netto').textContent.replace(/\D/g,'') || 0;
+  // histogram
+  const hctx = document.getElementById('histogram').getContext('2d');
+  if (histChart) histChart.destroy();
+  histChart = new Chart(hctx, {
+    type: 'bar',
+    data: { labels: ['År 1','År 2','År 3'], datasets: [{ data: [revNet, revNet*2, revNet*3], backgroundColor: '#1A3E65' }] },
+    options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color:'#fff' } }, y: { ticks: { color:'#fff'} } }, animation: { duration: 1200, easing: 'easeInOutCubic' } }
+  });
+  // line chart
+  const lctx = document.getElementById('lineChart').getContext('2d');
+  new Chart(lctx, {
+    type: 'line',
+    data: { labels: ['År 1','År 2','År 3'], datasets: [{ data: [revNet, revNet*2, revNet*3], borderColor: '#00FF66', backgroundColor: 'rgba(0,255,102,0.2)', fill: true, tension: 0.3, pointBackgroundColor: '#00FF66', pointHoverRadius: 8 }] },
+    options: { responsive: true, scales: { x: { ticks: { color: '#fff' }, grid: { color: 'rgba(255,255,255,0.1)' } }, y:{ ticks:{ color:'#fff', callback: v => v.toLocaleString('da-DK')+' EUR'}, grid:{ color:'rgba(255,255,255,0.1)'} } }, plugins: { legend: { display: false } }, animation: { duration: 1500, easing: 'easeInOutExpo' } }
   });
 }
 
-// Initial call
-updateCalc();
+// initialize
+document.addEventListener('DOMContentLoaded', () => {
+  updateCalc();
+});
