@@ -2,98 +2,79 @@
 <html lang="da">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
   <title>NORDEN CAPITAL GROUP – Transaktions Analyse</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <header class="header">
+  <div class="app">
+    <header class="app-header">
       <h1>NORDEN CAPITAL GROUP</h1>
       <h2>Transaktions Analyse</h2>
     </header>
-    <nav class="breadcrumb">
-      <span id="crumb-1" class="crumb active">1. Info</span>
-      <span id="crumb-2" class="crumb">2. Indtægtsberegning</span>
-      <span id="crumb-3" class="crumb">3. Omkostninger</span>
-      <span id="crumb-4" class="crumb">4. Netto</span>
-      <span id="crumb-5" class="crumb">5. Exit</span>
-      <span id="crumb-6" class="crumb">6. Afkast</span>
-      <span id="crumb-7" class="crumb">7. Oversigt</span>
+
+    <nav class="steps">
+      <div id="crumb-1" class="step active">1. Info</div>
+      <div id="crumb-2" class="step">2. Indtægtsberegning</div>
+      <div id="crumb-3" class="step">3. Omkostninger</div>
+      <div id="crumb-4" class="step">4. Netto</div>
+      <div id="crumb-5" class="step">5. Exit</div>
+      <div id="crumb-6" class="step">6. Afkast</div>
+      <div id="crumb-7" class="step">7. Oversigt</div>
     </nav>
-    <!-- Section 1 -->
-    <div id="section-1" class="section active">
+
+    <section id="section-1" class="panel active">
       <h3>1. Information</h3>
-      <label>Dato:</label>
-      <input type="date" id="date">
-      <label>Navn:</label>
-      <input type="text" id="name">
-      <button id="btn-1" class="next-btn" style="display:none;">Næste: Indtægtsberegning</button>
-    </div>
-    <!-- Section 2 -->
-    <div id="section-2" class="section">
+      <label>Dato:</label><input type="date" id="date">
+      <label>Navn:</label><input type="text" id="name">
+      <button id="btn-1" class="btn">Næste: Indtægtsberegning</button>
+    </section>
+
+    <section id="section-2" class="panel">
       <h3>2. Indtægtsberegning</h3>
-      <label>Pris pr. nat:</label>
-      <input type="number" id="prisPrNat">
-      <label>Lejede nætter om året:</label>
-      <input type="number" id="lejedeNaetter">
-      <div id="brutto" class="value green">Brutto lejeindtægter: 0 EUR</div>
-      <button id="btn-2" class="next-btn" style="display:none;">Næste: Driftsomkostninger</button>
-    </div>
-    <!-- Section 3 -->
-    <div id="section-3" class="section">
+      <label>Pris pr. nat:</label><input type="number" id="prisPrNat">
+      <label>Lejede nætter:</label><input type="number" id="lejedeNaetter">
+      <div id="brutto" class="result green">0 EUR</div>
+      <button id="btn-2" class="btn">Næste: Driftsomkostninger</button>
+    </section>
+
+    <section id="section-3" class="panel">
       <h3>3. Driftsomkostninger</h3>
-      <div id="udlejning" class="value blue">Udlejningsselskab (20%): 0 EUR</div>
-      <div class="value blue">Vedligeholdelse: 660 EUR</div>
-      <div id="totalCost" class="value blue">Samlede omkostninger: 0 EUR</div>
-      <div class="pie-chart-container">
-        <canvas id="pieChart"></canvas>
-      </div>
-      <div class="note">Omkostninger er 23% af din omsætning</div>
-      <button id="btn-3" class="next-btn" style="display:none;">Næste: Netto indkomst</button>
-    </div>
-    <!-- Section 4 -->
-    <div id="section-4" class="section">
+      <div id="udlejning" class="result orange">0 EUR</div>
+      <div id="maintenance" class="result blue">660 EUR</div>
+      <div id="totalCost" class="result orange">0 EUR</div>
+      <canvas id="pieChart" class="chart"></canvas>
+      <button id="btn-3" class="btn">Næste: Netto indkomst</button>
+    </section>
+
+    <section id="section-4" class="panel">
       <h3>4. Netto indkomst</h3>
-      <div id="netto" class="value green">Netto lejeindtægt: 0 EUR</div>
-      <button id="btn-4" class="next-btn" style="display:none;">Næste: Exit strategi</button>
-    </div>
-    <!-- Section 5 -->
-    <div id="section-5" class="section">
+      <div id="netto" class="result green">0 EUR</div>
+      <button id="btn-4" class="btn">Næste: Exit strategi</button>
+    </section>
+
+    <section id="section-5" class="panel">
       <h3>5. Exit strategi</h3>
-      <label>Diskonteringsfaktor (%):</label>
-      <input type="number" id="diskonto">
-      <div id="exitPrice" class="value green">Projekteret exit pris: 0 EUR</div>
-      <div id="delta" class="value green">
-        Værdiforøgelse/Delta: 0 EUR<br>
-        <span id="deltaDKK" class="sub"></span>
-      </div>
-      <button id="btn-5" class="next-btn" style="display:none;">Næste: Akkumuleret afkast</button>
-    </div>
-    <!-- Section 6 -->
-    <div id="section-6" class="section">
-      <h3>6. Akkumuleret afkast</h3>
-      <div id="cash3" class="value green">
-        Cashflow (3 år): 0 EUR<br>
-        <span id="cash3DKK" class="sub"></span>
-      </div>
-      <div id="totalReturn" class="value green">
-        TOTALT AFKAST: 0 EUR<br>
-        <span id="totalReturnDKK" class="sub"></span>
-      </div>
-      <button id="btn-6" class="next-btn" style="display:none;">Se: Investerings oversigt</button>
-    </div>
-    <!-- Section 7 -->
-    <div id="section-7" class="section">
+      <label>Diskonteringsfaktor (%):</label><input type="number" id="diskonto">
+      <div id="exitPrice" class="result green">0 EUR</div>
+      <div id="delta" class="result green">0 EUR</div>
+      <button id="btn-5" class="btn">Næste: Akkumuleret afkast</button>
+    </section>
+
+    <section id="section-6" class="panel">
+      <h3>6. Akk. afkast</h3>
+      <div id="cash3" class="result green">0 EUR</div>
+      <div id="totalReturn" class="result green">0 EUR</div>
+      <button id="btn-6" class="btn">Se: Oversigt</button>
+    </section>
+
+    <section id="section-7" class="panel">
       <h3>7. Investerings oversigt</h3>
-      <div class="histogram-container">
-        <canvas id="histogram"></canvas>
-      </div>
-      <div class="line-chart-container">
-        <canvas id="lineChart"></canvas>
-      </div>
-    </div>
+      <canvas id="histogram" class="chart"></canvas>
+      <canvas id="lineChart" class="chart"></canvas>
+    </section>
   </div>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="app.js"></script>
 </body>
