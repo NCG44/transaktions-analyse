@@ -4,218 +4,675 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Norden Capital Group - Transaktions Analyse</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #000000;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(116deg, #0C3C60 35.15625%, #09B5DA 100%);
+            padding: 30px 0;
+            margin-bottom: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(9, 181, 218, 0.3);
+            animation: headerGlow 3s ease-in-out infinite alternate;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .logo {
+            width: 80px;
+            height: auto;
+            margin-bottom: 20px;
+            filter: brightness(0) invert(1);
+        }
+        
+        @keyframes headerGlow {
+            from { box-shadow: 0 10px 30px rgba(9, 181, 218, 0.3); }
+            to { box-shadow: 0 15px 40px rgba(9, 181, 218, 0.5); }
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header h2 {
+            font-size: 1.8rem;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        
+        .projekteret-afkast {
+            background: linear-gradient(45deg, #2E8B57, #32CD32);
+            padding: 10px 30px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 20px;
+            display: inline-block;
+            animation: pulse 2s infinite;
+            box-shadow: 0 5px 15px rgba(50, 205, 50, 0.4);
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            margin: 30px 0;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid rgba(9, 181, 218, 0.3);
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease;
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+        
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .section h3 {
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .form-group {
+            margin: 20px 0;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #09B5DA;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(9, 181, 218, 0.3);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #09B5DA;
+            box-shadow: 0 0 20px rgba(9, 181, 218, 0.5);
+            transform: scale(1.02);
+        }
+        
+        .calculated-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 15px;
+            text-align: center;
+            border-radius: 10px;
+            margin: 10px 0;
+            transition: all 1s ease;
+        }
+        
+        .calculated-value.green {
+            background: linear-gradient(45deg, #2E8B57, #32CD32);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            border: 2px solid #32CD32;
+            box-shadow: 0 5px 15px rgba(50, 205, 50, 0.4);
+        }
+        
+        .calculated-value.blue {
+            background: linear-gradient(45deg, #0C3C60, #09B5DA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            border: 2px solid #09B5DA;
+            box-shadow: 0 5px 15px rgba(9, 181, 218, 0.4);
+        }
+        
+        @keyframes countUp {
+            from {
+                opacity: 0.5;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .count-animation {
+            animation: countUp 1s ease;
+        }
+        
+        .cost-breakdown {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .cost-item {
+            background: rgba(9, 181, 218, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #09B5DA;
+        }
+        
+        .cost-total {
+            grid-column: 1 / -1;
+            background: rgba(9, 181, 218, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #09B5DA;
+        }
+        
+        .pie-chart-container {
+            width: 300px;
+            height: 300px;
+            margin: 20px auto;
+            position: relative;
+        }
+        
+        .pie-chart {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                #2E8B57 0% 77%,
+                #09B5DA 77% 97%,
+                #0C3C60 97% 100%
+            );
+            animation: rotate 2s ease-in-out;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .cost-message {
+            text-align: center;
+            font-size: 1.3rem;
+            color: #09B5DA;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(9, 181, 218, 0.1);
+            border-radius: 10px;
+            border: 2px solid #09B5DA;
+        }
+        
+        .exit-price {
+            font-size: 2rem !important;
+            text-align: center;
+            padding: 25px;
+            margin: 20px 0;
+            background: linear-gradient(45deg, #32CD32, #00FF88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            border: 3px solid #32CD32;
+            border-radius: 15px;
+            animation: megaGlow 1.5s infinite alternate;
+        }
+        
+        @keyframes megaGlow {
+            from { 
+                box-shadow: 0 0 30px rgba(50, 205, 50, 0.5);
+                transform: scale(1);
+            }
+            to { 
+                box-shadow: 0 0 50px rgba(50, 205, 50, 0.8);
+                transform: scale(1.02);
+            }
+        }
+        
+        .total-return {
+            font-size: 2.5rem !important;
+            text-align: center;
+            padding: 30px;
+            margin: 30px 0;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            border: 4px solid #FFD700;
+            border-radius: 20px;
+            position: relative;
+            animation: celebrate 2s infinite alternate;
+        }
+        
+        @keyframes celebrate {
+            from { 
+                box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+                transform: scale(1);
+            }
+            to { 
+                box-shadow: 0 0 60px rgba(255, 215, 0, 0.9);
+                transform: scale(1.05);
+            }
+        }
+        
+        .currency-conversion {
+            font-size: 1.2rem;
+            color: #09B5DA;
+            font-style: italic;
+            margin-top: 10px;
+        }
+        
+        .next-section-btn {
+            background: linear-gradient(45deg, #09B5DA, #0C3C60);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px auto;
+            display: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(9, 181, 218, 0.4);
+        }
+        
+        .next-section-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(9, 181, 218, 0.6);
+        }
+        
+        .next-section-btn.show {
+            display: block;
+        }
+        
+        .line-chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 30px auto;
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+        }
+        
+        .line-chart {
+            width: 100%;
+            height: 100%;
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .header h1 { font-size: 1.8rem; }
+            .header h2 { font-size: 1.3rem; }
+            .cost-breakdown { grid-template-columns: 1fr; }
+            .pie-chart-container { width: 250px; height: 250px; }
+        }
+    </style>
 </head>
 <body>
-    <header class="app-header">
-        <div class="container">
-            <h1 class="company-title">Norden Capital Group</h1>
-            <h2 class="app-subtitle">Transaktions Analyse</h2>
-            <div class="projektet-afkast">Projekteret Afkast</div>
+    <div class="container">
+        <header class="header">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0yMCA4MEM0MCA2MCA2MCA0MCA4MCAyMCIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+CjxwYXRoIGQ9Ik0xMCA5MEM0MCA2MCA2MCA0MCA5MCAyMCIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+CjxwYXRoIGQ9Ik0zMCA3MEM1MCA1MCA3MCAzMCA5MCAzMCIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSI0IiBmaWxsPSJub25lIi8+Cjwvc3ZnPgo=" alt="Norden Capital Group Logo" class="logo">
+            <h1>NORDEN CAPITAL GROUP</h1>
+            <h2>Transaktions Analyse</h2>
+            <div class="projekteret-afkast">Projekteret Afkast</div>
+        </header>
+
+        <!-- Section 1: Information -->
+        <div class="section active visible" id="section-1">
+            <h3>1. Information</h3>
+            <div class="form-group">
+                <label class="form-label">Dato:</label>
+                <input type="date" id="date" class="form-control">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Navn:</label>
+                <input type="text" id="name" class="form-control" placeholder="Indtast dit navn">
+            </div>
+            <button class="next-section-btn" onclick="showNextSection(2)">Næste: Indtægtsberegning</button>
         </div>
-    </header>
 
-    <main class="container">
-        <!-- Information Section -->
-        <section class="calc-section" id="info-section">
-            <div class="card">
-                <div class="section-header">
-                    <h3>Information</h3>
-                    <div class="progress-indicator" data-progress="0"></div>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label" for="date">Dato</label>
-                        <input type="date" id="date" class="form-control modern-input">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="name">Navn</label>
-                        <input type="text" id="name" class="form-control modern-input" placeholder="Indtast dit navn">
-                    </div>
-                </div>
+        <!-- Section 2: Revenue Calculation -->
+        <div class="section" id="section-2">
+            <h3>2. Indtægtsberegning</h3>
+            <div class="form-group">
+                <label class="form-label">Pris pr. nat (Booking.com):</label>
+                <input type="number" id="prisPrNat" class="form-control">
             </div>
-        </section>
-
-        <!-- Revenue Calculation Section -->
-        <section class="calc-section locked" id="revenue-section">
-            <div class="card">
-                <div class="section-header">
-                    <h3>Indtægts Beregning</h3>
-                    <div class="progress-indicator" data-progress="0"></div>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label" for="price_per_night">Pris pr. nat (Booking.com)</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="price_per_night" class="form-control modern-input" placeholder="150" min="0" step="1">
-                            <span class="input-suffix">EUR</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="rental_nights">Lejede nætter om året</label>
-                        <input type="number" id="rental_nights" class="form-control modern-input" placeholder="146" min="0" step="1">
-                    </div>
-                    <div class="form-group result-field">
-                        <label class="form-label">Brutto lejeindtægter</label>
-                        <div class="calculated-result">
-                            <span class="result-value" id="gross_rental">0</span>
-                            <span class="result-suffix">EUR</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="form-group">
+                <label class="form-label">Lejede nætter om året:</label>
+                <input type="number" id="lejedeNaetter" class="form-control">
             </div>
-        </section>
-
-        <!-- Operating Costs Section -->
-        <section class="calc-section locked" id="costs-section">
-            <div class="card">
-                <div class="section-header">
-                    <h3>Drift Omkostninger</h3>
-                    <div class="progress-indicator" data-progress="0"></div>
-                </div>
-                <div class="costs-layout">
-                    <div class="costs-details">
-                        <div class="cost-item">
-                            <label class="form-label">Udlejningselskab (20% af omsætning)</label>
-                            <div class="calculated-result">
-                                <span class="result-value" id="management_cost">0</span>
-                                <span class="result-suffix">EUR</span>
-                            </div>
-                        </div>
-                        <div class="cost-item">
-                            <label class="form-label">Vedligeholdelse og reparationer</label>
-                            <div class="calculated-result">
-                                <span class="result-value">660</span>
-                                <span class="result-suffix">EUR</span>
-                            </div>
-                        </div>
-                        <div class="cost-item total-costs">
-                            <label class="form-label">Samlede årlige omkostninger</label>
-                            <div class="calculated-result">
-                                <span class="result-value" id="total_costs">660</span>
-                                <span class="result-suffix">EUR</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <div class="chart-wrapper" style="position: relative; height: 300px;">
-                            <canvas id="costsChart"></canvas>
-                        </div>
-                        <div class="chart-message">Omkostninger er kun <span class="highlight">23%</span> af din omsætning</div>
-                    </div>
-                </div>
+            <div class="calculated-value green" id="bruttoLejeindtaegter">
+                Brutto lejeindtægter: 0 EUR
             </div>
-        </section>
-
-        <!-- Net Income Section -->
-        <section class="calc-section locked" id="income-section">
-            <div class="card">
-                <div class="section-header">
-                    <h3>Netto Indkomst</h3>
-                    <div class="progress-indicator" data-progress="0"></div>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group result-field">
-                        <label class="form-label">Netto lejeindtægt pr. år</label>
-                        <div class="calculated-result glow-effect">
-                            <span class="result-value" id="net_income">0</span>
-                            <span class="result-suffix">EUR</span>
-                        </div>
-                    </div>
-                    <div class="form-group result-field">
-                        <label class="form-label">Projekteret årlig rente</label>
-                        <div class="calculated-result glow-effect">
-                            <span class="result-value" id="annual_return">0</span>
-                            <span class="result-suffix">%</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="return-progress"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Exit Strategy Section -->
-        <section class="calc-section locked" id="exit-section">
-            <div class="card">
-                <div class="section-header">
-                    <h3>Exit Strategi</h3>
-                    <div class="progress-indicator" data-progress="0"></div>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label" for="purchase_price">Købspris</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="purchase_price" class="form-control modern-input" placeholder="148000" min="0" step="1000">
-                            <span class="input-suffix">EUR</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="discount_factor">Diskonteringsfaktor</label>
-                        <div class="input-wrapper">
-                            <input type="number" id="discount_factor" class="form-control modern-input" placeholder="9" min="0" step="0.1">
-                            <span class="input-suffix">%</span>
-                        </div>
-                    </div>
-                    <div class="form-group result-field">
-                        <label class="form-label">Projekteret exit pris</label>
-                        <div class="calculated-result highlight-result">
-                            <span class="result-value" id="exit_price">0</span>
-                            <span class="result-suffix">EUR</span>
-                        </div>
-                    </div>
-                    <div class="form-group result-field">
-                        <label class="form-label">Værdiforøgelse/Delta</label>
-                        <div class="calculated-result glow-effect">
-                            <span class="result-value" id="value_increase">0</span>
-                            <span class="result-suffix">EUR</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Accumulated Return Section -->
-        <section class="calc-section locked" id="return-section">
-            <div class="card">
-                <div class="section-header">
-                    <h3>Akkumuleret Afkast</h3>
-                    <div class="progress-indicator" data-progress="0"></div>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group result-field">
-                        <label class="form-label">Lejeindtægt/Cashflow (3 år)</label>
-                        <div class="calculated-result glow-effect">
-                            <span class="result-value" id="three_year_cashflow">0</span>
-                            <span class="result-suffix">EUR</span>
-                        </div>
-                    </div>
-                    <div class="form-group result-field final-result">
-                        <label class="form-label">TOTALT AFKAST</label>
-                        <div class="calculated-result celebration-result">
-                            <span class="result-value" id="total_return">0</span>
-                            <span class="result-suffix">EUR</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="achievement-unlock hidden" id="final-achievement">
-                    <div class="achievement-icon">🎉</div>
-                    <div class="achievement-text">Beregning Fuldført!</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Sample Data Button for Testing -->
-        <div class="test-controls" style="text-align: center; margin: var(--space-32) 0;">
-            <button id="load-sample" class="btn btn--primary">Load Sample Data (Test)</button>
-            <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-top: var(--space-8);">
-                Or press Ctrl+L (Cmd+L) to load sample data quickly
-            </p>
+            <button class="next-section-btn" onclick="showNextSection(3)">Næste: Driftsomkostninger</button>
         </div>
-    </main>
 
-    <script src="app.js"></script>
+        <!-- Section 3: Operating Costs -->
+        <div class="section" id="section-3">
+            <h3>3. Driftsomkostninger</h3>
+            <div class="cost-breakdown">
+                <div class="cost-item">
+                    <strong>Udlejningsselskab (20% af omsætning):</strong>
+                    <div class="calculated-value blue" id="udlejningsselskab">0 EUR</div>
+                </div>
+                <div class="cost-item">
+                    <strong>Vedligeholdelse og reparationer:</strong>
+                    <div class="calculated-value blue">660 EUR</div>
+                </div>
+                <div class="cost-total">
+                    <strong>Samlede årlige omkostninger:</strong>
+                    <div class="calculated-value blue" id="totalOmkostninger">660 EUR</div>
+                </div>
+            </div>
+            
+            <div class="pie-chart-container">
+                <div class="pie-chart"></div>
+            </div>
+            
+            <div class="cost-message">
+                Omkostninger er 23% af din omsætning
+            </div>
+            <button class="next-section-btn" onclick="showNextSection(4)">Næste: Netto indkomst</button>
+        </div>
+
+        <!-- Section 4: Net Income -->
+        <div class="section" id="section-4">
+            <h3>4. Netto indkomst</h3>
+            <div class="calculated-value green" id="nettoIndkomst">
+                Netto lejeindtægt pr. år: 0 EUR
+            </div>
+            <div class="calculated-value green" id="projekteretRente">
+                Projekteret årlig rente: 0.0%
+            </div>
+            <button class="next-section-btn" onclick="showNextSection(5)">Næste: Exit strategi</button>
+        </div>
+
+        <!-- Section 5: Exit Strategy -->
+        <div class="section" id="section-5">
+            <h3>5. Exit strategi</h3>
+            <div class="form-group">
+                <label class="form-label">Diskonteringsfaktor (%):</label>
+                <input type="number" id="diskonteringsfaktor" class="form-control" step="0.1">
+            </div>
+            <div class="calculated-value exit-price" id="projekteretExitPris">
+                Projekteret exit pris: 0 EUR
+            </div>
+            <div class="calculated-value green" id="vaerdiforoegelse">
+                Værdiforøgelse/Delta: 0 EUR
+                <div class="currency-conversion" id="vaerdiforgelseDKK"></div>
+            </div>
+            <button class="next-section-btn" onclick="showNextSection(6)">Næste: Akkumuleret afkast</button>
+        </div>
+
+        <!-- Section 6: Total Return -->
+        <div class="section" id="section-6">
+            <h3>6. Akkumuleret afkast</h3>
+            <div class="calculated-value green" id="cashflow3Aar">
+                Lejeindtægt/Cashflow (3 år): 0 EUR
+                <div class="currency-conversion" id="cashflow3AarDKK"></div>
+            </div>
+            <div class="calculated-value total-return" id="totaltAfkast">
+                TOTALT AFKAST: 0 EUR
+                <div class="currency-conversion" id="totaltAfkastDKK"></div>
+            </div>
+            <button class="next-section-btn" onclick="showNextSection(7)">Se: Investerings Oversigt</button>
+        </div>
+
+        <!-- Section 7: Investment Overview -->
+        <div class="section" id="section-7">
+            <h3>7. Investerings Oversigt</h3>
+            <div class="line-chart-container">
+                <canvas id="lineChart" class="line-chart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        let currentSection = 1;
+        let lineChart = null;
+        const KOEBSPRIS = 143000; // Fixed purchase price
+        const EUR_TO_DKK = 7.44; // Conversion rate
+
+        // Set current date
+        document.getElementById('date').valueAsDate = new Date();
+
+        // Show next section function
+        function showNextSection(sectionNumber) {
+            // Hide current section's next button
+            document.querySelector(`#section-${currentSection} .next-section-btn`).classList.remove('show');
+            
+            // Show next section
+            const nextSection = document.getElementById(`section-${sectionNumber}`);
+            nextSection.classList.add('active');
+            
+            setTimeout(() => {
+                nextSection.classList.add('visible');
+                nextSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+            
+            currentSection = sectionNumber;
+            
+            // Show chart if it's the investment overview section
+            if (sectionNumber === 7) {
+                createLineChart();
+            }
+        }
+
+        // Animate number counting
+        function animateNumber(elementId, targetValue, duration = 1000) {
+            const element = document.getElementById(elementId);
+            const startValue = 0;
+            const increment = targetValue / (duration / 16); // 60 FPS
+            let currentValue = startValue;
+            
+            element.classList.add('count-animation');
+            
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= targetValue) {
+                    currentValue = targetValue;
+                    clearInterval(timer);
+                    setTimeout(() => {
+                        element.classList.remove('count-animation');
+                    }, 100);
+                }
+                
+                if (elementId.includes('Rente')) {
+                    element.innerHTML = `Projekteret årlig rente: ${currentValue.toFixed(1)}%`;
+                } else {
+                    element.innerHTML = element.innerHTML.split(':')[0] + `: ${Math.round(currentValue).toLocaleString('da-DK')} EUR`;
+                }
+            }, 16);
+        }
+
+        // Update calculations
+        function updateCalculations() {
+            const prisPrNat = parseFloat(document.getElementById('prisPrNat').value) || 0;
+            const lejedeNaetter = parseFloat(document.getElementById('lejedeNaetter').value) || 0;
+            const diskonteringsfaktor = parseFloat(document.getElementById('diskonteringsfaktor').value) || 9;
+            
+            // Calculate brutto lejeindtægter
+            const bruttoLejeindtaegter = prisPrNat * lejedeNaetter;
+            if (bruttoLejeindtaegter > 0) {
+                animateNumber('bruttoLejeindtaegter', bruttoLejeindtaegter);
+                document.querySelector('#section-2 .next-section-btn').classList.add('show');
+            }
+            
+            // Calculate driftsomkostninger
+            const udlejningsselskab = bruttoLejeindtaegter * 0.20;
+            const vedligeholdelse = 660;
+            const totalOmkostninger = udlejningsselskab + vedligeholdelse;
+            
+            if (udlejningsselskab > 0) {
+                animateNumber('udlejningsselskab', udlejningsselskab);
+                animateNumber('totalOmkostninger', totalOmkostninger);
+                
+                // Update cost percentage message
+                if (bruttoLejeindtaegter > 0) {
+                    const costPercentage = Math.round((totalOmkostninger / bruttoLejeindtaegter) * 100);
+                    document.querySelector('.cost-message').innerHTML = 
+                        `Omkostninger er ${costPercentage}% af din omsætning`;
+                }
+                
+                document.querySelector('#section-3 .next-section-btn').classList.add('show');
+            }
+            
+            // Calculate netto indkomst
+            const nettoIndkomst = bruttoLejeindtaegter - totalOmkostninger;
+            if (nettoIndkomst > 0) {
+                animateNumber('nettoIndkomst', nettoIndkomst);
+                
+                // Calculate projekteret rente
+                const projekteretRente = (nettoIndkomst / KOEBSPRIS) * 100;
+                animateNumber('projekteretRente', projekteretRente);
+                
+                document.querySelector('#section-4 .next-section-btn').classList.add('show');
+            }
+            
+            // Calculate exit strategy
+            if (diskonteringsfaktor > 0 && nettoIndkomst > 0) {
+                const projekteretExitPris = nettoIndkomst / (diskonteringsfaktor / 100);
+                animateNumber('projekteretExitPris', projekteretExitPris);
+                
+                const vaerdiforoegelse = projekteretExitPris - KOEBSPRIS;
+                animateNumber('vaerdiforoegelse', vaerdiforoegelse);
+                
+                // Add DKK conversion
+                document.getElementById('vaerdiforgelseDKK').textContent = 
+                    `(${(vaerdiforoegelse * EUR_TO_DKK).toLocaleString('da-DK')} DKK)`;
+                
+                document.querySelector('#section-5 .next-section-btn').classList.add('show');
+                
+                // Calculate total return
+                const cashflow3Aar = nettoIndkomst * 3;
+                animateNumber('cashflow3Aar', cashflow3Aar);
+                
+                // Add DKK conversion
+                document.getElementById('cashflow3AarDKK').textContent = 
+                    `(${(cashflow3Aar * EUR_TO_DKK).toLocaleString('da-DK')} DKK)`;
+                
+                const totaltAfkast = cashflow3Aar + vaerdiforoegelse;
+                animateNumber('totaltAfkast', totaltAfkast);
+                
+                // Add DKK conversion
+                document.getElementById('totaltAfkastDKK').textContent = 
+                    `(${(totaltAfkast * EUR_TO_DKK).toLocaleString('da-DK')} DKK)`;
+                
+                document.querySelector('#section-6 .next-section-btn').classList.add('show');
+            }
+        }
+
+        // Create interactive line chart
+        function createLineChart() {
+            const ctx = document.getElementById('lineChart').getContext('2d');
+            const nettoIndkomst = parseFloat(document.getElementById('nettoIndkomst').textContent.replace(/[^0-9.-]+/g,"")) || 0;
+            
+            const data = {
+                labels: ['År 1', 'År 2', 'År 3'],
+                datasets: [{
+                    label: 'Akkumuleret Lejeindtægt (EUR)',
+                    data: [nettoIndkomst, nettoIndkomst * 2, nettoIndkomst * 3],
+                    borderColor: '#32CD32',
+                    backgroundColor: 'rgba(50, 205, 50, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4
+                }]
+            };
+            
+            lineChart = new Chart(ctx, {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'white'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: 'white',
+                                callback: function(value) {
+                                    return value.toLocaleString('da-DK') + ' EUR';
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: 'white'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
+                    }
+                }
+            });
+        }
+
+        // Add event listeners
+        ['prisPrNat', 'lejedeNaetter', 'diskonteringsfaktor'].forEach(id => {
+            document.getElementById(id).addEventListener('input', updateCalculations);
+        });
+        
+        // Initial calculation
+        updateCalculations();
+    </script>
 </body>
 </html>
