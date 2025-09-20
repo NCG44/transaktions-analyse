@@ -89,11 +89,11 @@ function updateCalculations() {
     animateValue('delta', deltaValue);
 
     const cashflow3Years = netRevenue * 3;
-    animateValue('cash3', cashflow3Years, true); // true for permanent neon
+    animateValue('cash3', cashflow3Years, true); // true for permanent neon numbers only
 
     const totalReturn = cashflow3Years + deltaValue;
-    animateValue('totalReturn', totalReturn, true); // true for permanent neon
-    animateValue('finalTotalReturn', totalReturn, true); // true for permanent neon
+    animateValue('totalReturn', totalReturn, true); // true for permanent neon numbers only
+    animateValue('finalTotalReturn', totalReturn, true); // true for permanent neon numbers only
 
     // Update currency conversion
     updateCurrencyConversion(cashflow3Years, deltaValue, totalReturn);
@@ -119,7 +119,7 @@ function updateCurrencyConversion(rental, valueAppreciation, total) {
   document.getElementById('totalDKK').textContent = `${totalDKK.toLocaleString('da-DK')} DKK`;
 }
 
-function animateValue(id, targetValue, permanentNeon = false, suffix = ' EUR') {
+function animateValue(id, targetValue, permanentNeonNumbers = false, suffix = ' EUR') {
   const element = document.getElementById(id);
   if (!element) return;
 
@@ -137,9 +137,10 @@ function animateValue(id, targetValue, permanentNeon = false, suffix = ' EUR') {
       currentValue = targetValue;
       setTimeout(() => {
         element.classList.remove('counting-animation');
-        // Keep neon green permanently for afkast values
-        if (permanentNeon) {
+        // Apply neon green to numbers only (not the entire text)
+        if (permanentNeonNumbers) {
           element.classList.add('neon-permanent');
+          applyNeonToNumbersOnly(element);
         }
       }, 200);
     }
@@ -148,6 +149,20 @@ function animateValue(id, targetValue, permanentNeon = false, suffix = ' EUR') {
     const label = element.textContent.split(':')[0];
     element.textContent = `${label}: ${displayValue.toLocaleString('da-DK')}${suffix}`;
   }, stepTime);
+}
+
+// Function to apply neon green only to numbers
+function applyNeonToNumbersOnly(element) {
+  const text = element.textContent;
+  const parts = text.split(':');
+  
+  if (parts.length === 2) {
+    const label = parts[0].trim();
+    const value = parts[1].trim();
+    
+    // Create HTML with styled numbers
+    element.innerHTML = `<span class="label-text">${label}:</span> <span class="neon-number">${value}</span>`;
+  }
 }
 
 function drawPieChart(data) {
