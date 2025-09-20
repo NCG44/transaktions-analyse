@@ -89,11 +89,11 @@ function updateCalculations() {
     animateValue('delta', deltaValue);
 
     const cashflow3Years = netRevenue * 3;
-    animateValue('cash3', cashflow3Years, true); // true for permanent neon numbers only
+    animateValueWithNeonNumbers('cash3', cashflow3Years, 'Cashflow (3 år)'); // Special neon function
 
     const totalReturn = cashflow3Years + deltaValue;
-    animateValue('totalReturn', totalReturn, true); // true for permanent neon numbers only
-    animateValue('finalTotalReturn', totalReturn, true); // true for permanent neon numbers only
+    animateValueWithNeonNumbers('totalReturn', totalReturn, 'TOTALT AFKAST'); // Special neon function
+    animateValueWithNeonNumbers('finalTotalReturn', totalReturn, 'TOTALT AFKAST'); // Special neon function
 
     // Update currency conversion
     updateCurrencyConversion(cashflow3Years, deltaValue, totalReturn);
@@ -119,7 +119,7 @@ function updateCurrencyConversion(rental, valueAppreciation, total) {
   document.getElementById('totalDKK').textContent = `${totalDKK.toLocaleString('da-DK')} DKK`;
 }
 
-function animateValue(id, targetValue, permanentNeonNumbers = false, suffix = ' EUR') {
+function animateValue(id, targetValue, suffix = ' EUR') {
   const element = document.getElementById(id);
   if (!element) return;
 
@@ -137,11 +137,6 @@ function animateValue(id, targetValue, permanentNeonNumbers = false, suffix = ' 
       currentValue = targetValue;
       setTimeout(() => {
         element.classList.remove('counting-animation');
-        // Apply neon green to numbers only (not the entire text)
-        if (permanentNeonNumbers) {
-          element.classList.add('neon-permanent');
-          applyNeonToNumbersOnly(element);
-        }
       }, 200);
     }
     
@@ -151,18 +146,34 @@ function animateValue(id, targetValue, permanentNeonNumbers = false, suffix = ' 
   }, stepTime);
 }
 
-// Function to apply neon green only to numbers
-function applyNeonToNumbersOnly(element) {
-  const text = element.textContent;
-  const parts = text.split(':');
+function animateValueWithNeonNumbers(id, targetValue, labelText, suffix = ' EUR') {
+  const element = document.getElementById(id);
+  if (!element) return;
+
+  element.classList.add('counting-animation');
+  element.classList.add('neon-permanent');
   
-  if (parts.length === 2) {
-    const label = parts[0].trim();
-    const value = parts[1].trim();
-    
-    // Create HTML with styled numbers
-    element.innerHTML = `<span class="label-text">${label}:</span> <span class="neon-number">${value}</span>`;
-  }
+  let currentValue = 0;
+  const increment = targetValue / 80;
+  const duration = 1200;
+  const stepTime = duration / 80;
+
+  const interval = setInterval(() => {
+    currentValue += increment;
+    if (currentValue >= targetValue) {
+      clearInterval(interval);
+      currentValue = targetValue;
+      setTimeout(() => {
+        element.classList.remove('counting-animation');
+        // Apply the neon number styling
+        const displayValue = Math.round(currentValue);
+        element.innerHTML = `<span class="label-text">${labelText}:</span> <span class="neon-number">${displayValue.toLocaleString('da-DK')}${suffix}</span>`;
+      }, 200);
+    } else {
+      const displayValue = Math.round(currentValue);
+      element.textContent = `${labelText}: ${displayValue.toLocaleString('da-DK')}${suffix}`;
+    }
+  }, stepTime);
 }
 
 function drawPieChart(data) {
