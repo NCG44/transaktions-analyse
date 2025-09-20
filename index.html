@@ -41,23 +41,23 @@
     <input type="number" id="prisPrNat" placeholder="EUR">
     <label for="lejedeNaetter">Lejede nætter pr år:</label>
     <input type="number" id="lejedeNaetter" placeholder="Nætter">
-    <div id="brutto" class="value neon-green animate-3d">Brutto lejeindtægter: 0 EUR</div>
+    <div id="brutto" class="value professional">Brutto lejeindtægter: 0 EUR</div>
     <button id="btn-2" class="next-btn">Næste</button>
   </section>
 
   <section id="section-3" class="section">
     <h3>3. Driftsomkostninger</h3>
-    <div id="udlejning" class="value orange animate-3d">Udlejningsselskab (20%): 0 EUR</div>
-    <div class="value blue animate-3d">Vedligeholdelse og reparationer: 660 EUR</div>
-    <div id="totalCost" class="value orange animate-3d">Samlede omkostninger: 0 EUR</div>
-    <div class="cost-percentage animate-3d">Omkostninger er kun 23% af din omsætning</div>
+    <div id="udlejning" class="value professional">Udlejningsselskab (20%): 0 EUR</div>
+    <div class="value professional">Vedligeholdelse og reparationer: 660 EUR</div>
+    <div id="totalCost" class="value professional">Samlede omkostninger: 0 EUR</div>
+    <div class="cost-percentage">Omkostninger er kun 23% af din omsætning</div>
     <div class="pie-chart-container"><canvas id="pieChart"></canvas></div>
     <button id="btn-3" class="next-btn">Næste</button>
   </section>
 
   <section id="section-4" class="section">
     <h3>4. Netto indkomst</h3>
-    <div id="netto" class="value neon-green animate-3d">Netto lejeindtægt: 0 EUR</div>
+    <div id="netto" class="value professional">Netto lejeindtægt: 0 EUR</div>
     <button id="btn-4" class="next-btn">Næste</button>
   </section>
 
@@ -65,16 +65,15 @@
     <h3>5. Exit strategi</h3>
     <label for="diskonto">Diskonteringsfaktor (%):</label>
     <input type="number" id="diskonto" step="0.1">
-    <div id="exitPrice" class="value neon-green animate-3d">Projekteret exit pris: 0 EUR</div>
-    <div id="delta" class="value neon-green animate-3d">Værdiforøgelse/Delta: 0 EUR</div>
-    <div id="projectedReturn" class="value neon-green animate-3d">Projekteret afkast: 0 EUR</div>
+    <div id="exitPrice" class="value professional">Projekteret exit pris: 0 EUR</div>
+    <div id="delta" class="value professional">Værdiforøgelse/Delta: 44333 EUR</div>
     <button id="btn-5" class="next-btn">Næste</button>
   </section>
 
   <section id="section-6" class="section">
     <h3>6. Akkumuleret afkast</h3>
-    <div id="cash3" class="value neon-green animate-3d">Cashflow (3 år): 0 EUR</div>
-    <div id="totalReturn" class="value neon-green animate-3d">TOTALT AFKAST: 0 EUR</div>
+    <div id="cash3" class="value professional">Cashflow (3 år): 0 EUR</div>
+    <div id="totalReturn" class="value professional">TOTALT AFKAST: 0 EUR</div>
     <button id="btn-6" class="next-btn">Se oversigt</button>
   </section>
 
@@ -82,7 +81,24 @@
     <h3>7. Investerings oversigt</h3>
     <div class="chart-grid">
       <div class="line-chart-container"><canvas id="lineChart"></canvas></div>
-      <div id="finalTotalReturn" class="value neon-green animate-3d">TOTALT AFKAST: 0 EUR</div>
+      <div class="currency-conversion">
+        <h4>Valutaomregning (EUR → DKK)</h4>
+        <div class="conversion-grid">
+          <div class="conversion-item">
+            <span class="label">Akkumuleret lejeindtægt (3 år):</span>
+            <span id="rentalDKK" class="amount">0 DKK</span>
+          </div>
+          <div class="conversion-item">
+            <span class="label">Værdiforøgelse:</span>
+            <span id="valueDKK" class="amount">330.000 DKK</span>
+          </div>
+          <div class="conversion-item total">
+            <span class="label">Total akkumuleret afkast:</span>
+            <span id="totalDKK" class="amount">0 DKK</span>
+          </div>
+        </div>
+      </div>
+      <div id="finalTotalReturn" class="value professional">TOTALT AFKAST: 0 EUR</div>
     </div>
   </section>
 </div>
