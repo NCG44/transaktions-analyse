@@ -205,12 +205,21 @@ input:focus {
   background: rgba(12, 60, 96, 0.2) !important;
   border: 2px solid rgba(9, 181, 218, 0.3) !important;
   box-shadow: 0 0 15px rgba(9, 181, 218, 0.1) !important;
-  color: var(--neon-green) !important;
-  text-shadow: 0 0 15px var(--neon-green) !important;
 }
 
 .value.neon-permanent:hover {
   box-shadow: 0 15px 35px rgba(9, 181, 218, 0.2) !important;
+}
+
+/* New styling for label and neon numbers */
+.value.neon-permanent .label-text {
+  color: var(--light-blue);
+  text-shadow: none;
+}
+
+.value.neon-permanent .neon-number {
+  color: var(--neon-green) !important;
+  text-shadow: 0 0 15px var(--neon-green) !important;
 }
 
 .cost-percentage {
