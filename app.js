@@ -285,8 +285,31 @@ function drawRentalChart(netValue) {
         }
       },
       animation: {
-        duration: 2000,
-        easing: 'easeInOutCubic'
+        duration: 3000,
+        easing: 'easeInOutCubic',
+        onProgress: function(animation) {
+          const progress = animation.currentStep / animation.numSteps;
+          const canvas = animation.chart.canvas;
+          
+          // Add glow effect during animation
+          if (progress < 1) {
+            canvas.style.filter = `drop-shadow(0 0 ${5 + progress * 10}px rgba(0, 255, 102, ${0.3 + progress * 0.3}))`;
+          } else {
+            canvas.style.filter = 'drop-shadow(0 4px 15px rgba(9, 181, 218, 0.1))';
+          }
+          
+          // Progressive line drawing
+          this.data.datasets.forEach((dataset, index) => {
+            const meta = this.getDatasetMeta(index);
+            meta.data.forEach((point, pointIndex) => {
+              if (pointIndex / meta.data.length <= progress) {
+                point.options.pointRadius = 8;
+              } else {
+                point.options.pointRadius = 0;
+              }
+            });
+          });
+        }
       },
       interaction: {
         intersect: false,
@@ -377,8 +400,35 @@ function drawValueChart(deltaValue) {
         }
       },
       animation: {
-        duration: 2500,
-        easing: 'easeInOutCubic'
+        duration: 3000,
+        easing: 'easeInOutCubic',
+        onProgress: function(animation) {
+          const progress = animation.currentStep / animation.numSteps;
+          const canvas = animation.chart.canvas;
+          
+          // Add glow effect during animation
+          if (progress < 1) {
+            canvas.style.filter = `drop-shadow(0 0 ${5 + progress * 10}px rgba(9, 181, 218, ${0.3 + progress * 0.3}))`;
+          } else {
+            canvas.style.filter = 'drop-shadow(0 4px 15px rgba(9, 181, 218, 0.1))';
+          }
+          
+          // Progressive line drawing
+          this.data.datasets.forEach((dataset, index) => {
+            const meta = this.getDatasetMeta(index);
+            meta.data.forEach((point, pointIndex) => {
+              if (pointIndex / meta.data.length <= progress) {
+                if (pointIndex === meta.data.length - 1) {
+                  point.options.pointRadius = 12; // Special end point
+                } else {
+                  point.options.pointRadius = 6;
+                }
+              } else {
+                point.options.pointRadius = 0;
+              }
+            });
+          });
+        }
       },
       interaction: {
         intersect: false,
