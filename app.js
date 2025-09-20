@@ -77,23 +77,29 @@ function updateCalculations() {
   }
 
   const discountFactor = +document.getElementById('diskonto').value || 0;
+  
+  // Only calculate if discount factor is provided
   if (discountFactor && netRevenue) {
+    // Exit price calculation: net annual income / discount rate
     const projectedExitPrice = (netRevenue / (discountFactor / 100));
     animateValue('exitPrice', projectedExitPrice);
 
-    // Fixed value appreciation of 44,333 EUR
-    const deltaValue = 44333;
-    document.getElementById('delta').textContent = `Værdiforøgelse/Delta: ${deltaValue.toLocaleString('da-DK')} EUR`;
+    // Værdiforøgelse calculation: exit price - initial investment (assume 143,000)
+    const deltaValue = projectedExitPrice - 143000;
+    animateValue('delta', deltaValue);
 
     const cashflow3Years = netRevenue * 3;
-    animateValue('cash3', cashflow3Years);
+    animateValue('cash3', cashflow3Years, true); // true for permanent neon
 
     const totalReturn = cashflow3Years + deltaValue;
-    animateValue('totalReturn', totalReturn);
-    animateValue('finalTotalReturn', totalReturn);
+    animateValue('totalReturn', totalReturn, true); // true for permanent neon
+    animateValue('finalTotalReturn', totalReturn, true); // true for permanent neon
 
     // Update currency conversion
     updateCurrencyConversion(cashflow3Years, deltaValue, totalReturn);
+  } else {
+    // Reset værdiforøgelse if no discount factor
+    document.getElementById('delta').textContent = 'Værdiforøgelse/Delta: 0 EUR';
   }
 }
 
@@ -107,7 +113,7 @@ function updateCurrencyConversion(rental, valueAppreciation, total) {
   document.getElementById('totalDKK').textContent = `${totalDKK.toLocaleString('da-DK')} DKK`;
 }
 
-function animateValue(id, targetValue, suffix = ' EUR') {
+function animateValue(id, targetValue, permanentNeon = false, suffix = ' EUR') {
   const element = document.getElementById(id);
   if (!element) return;
 
@@ -125,6 +131,10 @@ function animateValue(id, targetValue, suffix = ' EUR') {
       currentValue = targetValue;
       setTimeout(() => {
         element.classList.remove('counting-animation');
+        // Keep neon green permanently for afkast values
+        if (permanentNeon) {
+          element.classList.add('neon-permanent');
+        }
       }, 200);
     }
     
@@ -192,7 +202,7 @@ function drawPieChart(data) {
 
 function initCharts() {
   const netValue = +document.getElementById('netto').textContent.replace(/\D/g, '') || 0;
-  const deltaValue = 44333;
+  const deltaValue = +document.getElementById('delta').textContent.replace(/\D/g, '') || 0;
   
   if (netValue === 0) return;
 
@@ -200,15 +210,15 @@ function initCharts() {
   
   if (lineChart) lineChart.destroy();
   
-  // Timeline: Sep 2025 -> Jan 2027 (16 months)
+  // Timeline: Rental income starts Jan 2027, Value appreciation happens at completion (2027)
   lineChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: ['Sep 2025', 'År 2026', 'Jan 2027'],
+      labels: ['2027', '2028', '2029', '2030'],
       datasets: [
         {
-          label: 'Akkumuleret lejeindkomst',
-          data: [0, netValue * 1.3, netValue * 1.6],
+          label: 'Akkumuleret lejeindkomst (fra 2027)',
+          data: [netValue, netValue * 2, netValue * 3, netValue * 4],
           borderColor: '#00ff66',
           backgroundColor: 'rgba(0, 255, 102, 0.1)',
           fill: true,
@@ -221,12 +231,12 @@ function initCharts() {
           borderWidth: 4
         },
         {
-          label: 'Værdiforøgelse (Jan 2027)',
-          data: [0, deltaValue * 0.7, deltaValue],
+          label: 'Værdiforøgelse (2027 completion)',
+          data: [deltaValue, deltaValue, deltaValue, deltaValue],
           borderColor: '#09B5DA',
           backgroundColor: 'rgba(9, 181, 218, 0.1)',
           fill: false,
-          tension: 0.4,
+          tension: 0,
           pointBackgroundColor: '#09B5DA',
           pointBorderColor: '#ffffff',
           pointBorderWidth: 3,
@@ -302,5 +312,5 @@ function initCharts() {
   });
 }
 
-// Initialize with fixed value appreciation
+// Initialize
 updateCalculations();
