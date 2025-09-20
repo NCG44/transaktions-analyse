@@ -4,6 +4,9 @@ document.getElementById('date').valueAsDate = new Date();
 const panels = document.querySelectorAll('.section');
 const crumbs = document.querySelectorAll('.crumb');
 
+// EUR to DKK conversion rate
+const EUR_TO_DKK = 7.44;
+
 // Intersection Observer for scroll animations
 const observerOptions = {
   threshold: 0.3,
@@ -14,7 +17,6 @@ const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       entry.target.classList.add('animate-on-scroll');
-      // Trigger chart animations if this is the overview section
       if (entry.target.id === 'section-7') {
         setTimeout(initCharts, 300);
       }
@@ -22,7 +24,6 @@ const observer = new IntersectionObserver((entries) => {
   });
 }, observerOptions);
 
-// Observe all sections for scroll animations
 panels.forEach(panel => observer.observe(panel));
 
 function showPanel(i) {
@@ -77,15 +78,12 @@ function updateCalculations() {
 
   const discountFactor = +document.getElementById('diskonto').value || 0;
   if (discountFactor && netRevenue) {
-    // Automatic calculation: exit price = net annual income / discount factor
     const projectedExitPrice = (netRevenue / (discountFactor / 100));
     animateValue('exitPrice', projectedExitPrice);
 
-    const deltaValue = projectedExitPrice - 143000;
-    animateValue('delta', deltaValue);
-    
-    const projectedReturn = deltaValue + netRevenue;
-    animateValue('projectedReturn', projectedReturn);
+    // Fixed value appreciation of 44,333 EUR
+    const deltaValue = 44333;
+    document.getElementById('delta').textContent = `Værdiforøgelse/Delta: ${deltaValue.toLocaleString('da-DK')} EUR`;
 
     const cashflow3Years = netRevenue * 3;
     animateValue('cash3', cashflow3Years);
@@ -93,7 +91,20 @@ function updateCalculations() {
     const totalReturn = cashflow3Years + deltaValue;
     animateValue('totalReturn', totalReturn);
     animateValue('finalTotalReturn', totalReturn);
+
+    // Update currency conversion
+    updateCurrencyConversion(cashflow3Years, deltaValue, totalReturn);
   }
+}
+
+function updateCurrencyConversion(rental, valueAppreciation, total) {
+  const rentalDKK = Math.round(rental * EUR_TO_DKK);
+  const valueDKK = Math.round(valueAppreciation * EUR_TO_DKK);
+  const totalDKK = Math.round(total * EUR_TO_DKK);
+
+  document.getElementById('rentalDKK').textContent = `${rentalDKK.toLocaleString('da-DK')} DKK`;
+  document.getElementById('valueDKK').textContent = `${valueDKK.toLocaleString('da-DK')} DKK`;
+  document.getElementById('totalDKK').textContent = `${totalDKK.toLocaleString('da-DK')} DKK`;
 }
 
 function animateValue(id, targetValue, suffix = ' EUR') {
@@ -103,8 +114,8 @@ function animateValue(id, targetValue, suffix = ' EUR') {
   element.classList.add('counting-animation', 'slot-machine-effect');
   
   let currentValue = 0;
-  const increment = targetValue / 80; // Slower animation for psychological effect
-  const duration = 1200; // Total animation duration in ms
+  const increment = targetValue / 80;
+  const duration = 1200;
   const stepTime = duration / 80;
 
   const interval = setInterval(() => {
@@ -135,13 +146,13 @@ function drawPieChart(data) {
       datasets: [{
         data: data,
         backgroundColor: [
-          'rgba(0, 255, 102, 0.8)',
-          'rgba(255, 127, 0, 0.8)',
-          'rgba(9, 181, 218, 0.8)'
+          'rgba(9, 181, 218, 0.8)',
+          'rgba(12, 60, 96, 0.8)',
+          'rgba(9, 181, 218, 0.6)'
         ],
         borderColor: [
-          '#00ff66',
-          '#ff7f00',
+          '#09B5DA',
+          '#0C3C60',
           '#09B5DA'
         ],
         borderWidth: 3,
@@ -163,9 +174,9 @@ function drawPieChart(data) {
         },
         tooltip: {
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          titleColor: '#00ff66',
+          titleColor: '#09B5DA',
           bodyColor: '#ffffff',
-          borderColor: '#00ff66',
+          borderColor: '#09B5DA',
           borderWidth: 1
         }
       },
@@ -181,7 +192,7 @@ function drawPieChart(data) {
 
 function initCharts() {
   const netValue = +document.getElementById('netto').textContent.replace(/\D/g, '') || 0;
-  const deltaValue = +document.getElementById('delta').textContent.replace(/\D/g, '') || 0;
+  const deltaValue = 44333;
   
   if (netValue === 0) return;
 
@@ -189,7 +200,6 @@ function initCharts() {
   
   if (lineChart) lineChart.destroy();
   
-  // Animated line chart with two lines
   lineChart = new Chart(ctx, {
     type: 'line',
     data: {
@@ -274,7 +284,6 @@ function initCharts() {
         duration: 2000,
         easing: 'easeInOutCubic',
         onProgress: function(animation) {
-          // Progressive line drawing effect
           const progress = animation.currentStep / animation.numSteps;
           this.data.datasets.forEach((dataset, index) => {
             const meta = this.getDatasetMeta(index);
@@ -292,5 +301,5 @@ function initCharts() {
   });
 }
 
-// Initialize calculations
+// Initialize with fixed value appreciation
 updateCalculations();
