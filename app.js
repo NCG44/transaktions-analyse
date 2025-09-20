@@ -286,24 +286,38 @@ function drawValueChart(deltaValue) {
   
   if (valueChart) valueChart.destroy();
   
+  // Create curved growth data points following the attached graph logic
+  const baseValue = 143000; // Starting property value
+  const finalValue = baseValue + deltaValue; // Final property value
+  
+  // Generate curved growth from Sep 2025 to Jan 2027 (16 months)
+  const growthData = [
+    baseValue, // Sep 2025 - starting point
+    baseValue + (deltaValue * 0.05), // Jan 2026 - minimal growth
+    baseValue + (deltaValue * 0.15), // May 2026 - slow growth
+    baseValue + (deltaValue * 0.35), // Sep 2026 - moderate growth
+    baseValue + (deltaValue * 0.70), // Nov 2026 - accelerated growth
+    finalValue // Jan 2027 - completion
+  ];
+  
   valueChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: ['2025', '2026', '2027', '2028', '2029', '2030'],
+      labels: ['Sep 2025', 'Jan 2026', 'Mai 2026', 'Sep 2026', 'Nov 2026', 'Jan 2027'],
       datasets: [{
         label: 'Værdiforøgelse',
-        data: [0, 0, deltaValue, deltaValue, deltaValue, deltaValue],
+        data: growthData,
         borderColor: '#09B5DA',
         backgroundColor: 'rgba(9, 181, 218, 0.1)',
-        fill: false,
-        tension: 0,
-        pointBackgroundColor: '#09B5DA',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: ['#09B5DA', '#09B5DA', '#09B5DA', '#09B5DA', '#09B5DA', '#00ff66'],
         pointBorderColor: '#ffffff',
         pointBorderWidth: 3,
-        pointRadius: 8,
-        pointHoverRadius: 12,
-        borderWidth: 4,
-        stepped: 'after'
+        pointRadius: [6, 6, 6, 6, 6, 12],
+        pointHoverRadius: [10, 10, 10, 10, 10, 16],
+        pointHoverBackgroundColor: ['#09B5DA', '#09B5DA', '#09B5DA', '#09B5DA', '#09B5DA', '#00ff66'],
+        borderWidth: 4
       }]
     },
     options: {
@@ -339,12 +353,24 @@ function drawValueChart(deltaValue) {
           titleColor: '#09B5DA',
           bodyColor: '#ffffff',
           borderColor: '#09B5DA',
-          borderWidth: 2
+          borderWidth: 2,
+          callbacks: {
+            label: function(context) {
+              if (context.dataIndex === context.dataset.data.length - 1) {
+                return `Færdig værdi: ${context.parsed.y.toLocaleString('da-DK')} EUR`;
+              }
+              return `Værdi: ${context.parsed.y.toLocaleString('da-DK')} EUR`;
+            }
+          }
         }
       },
       animation: {
-        duration: 2000,
+        duration: 2500,
         easing: 'easeInOutCubic'
+      },
+      interaction: {
+        intersect: false,
+        mode: 'index'
       }
     }
   });
