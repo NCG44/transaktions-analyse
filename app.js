@@ -108,6 +108,12 @@ function updateCurrencyConversion(rental, valueAppreciation, total) {
   const valueDKK = Math.round(valueAppreciation * EUR_TO_DKK);
   const totalDKK = Math.round(total * EUR_TO_DKK);
 
+  // Update EUR amounts
+  document.getElementById('rentalEUR').textContent = `${Math.round(rental).toLocaleString('da-DK')} EUR`;
+  document.getElementById('valueEUR').textContent = `${Math.round(valueAppreciation).toLocaleString('da-DK')} EUR`;
+  document.getElementById('totalEUR').textContent = `${Math.round(total).toLocaleString('da-DK')} EUR`;
+
+  // Update DKK amounts
   document.getElementById('rentalDKK').textContent = `${rentalDKK.toLocaleString('da-DK')} DKK`;
   document.getElementById('valueDKK').textContent = `${valueDKK.toLocaleString('da-DK')} DKK`;
   document.getElementById('totalDKK').textContent = `${totalDKK.toLocaleString('da-DK')} DKK`;
@@ -270,12 +276,21 @@ function drawRentalChart(netValue) {
           titleColor: '#00ff66',
           bodyColor: '#ffffff',
           borderColor: '#00ff66',
-          borderWidth: 2
+          borderWidth: 2,
+          callbacks: {
+            label: function(context) {
+              return `Lejeindtægt: ${context.parsed.y.toLocaleString('da-DK')} EUR`;
+            }
+          }
         }
       },
       animation: {
         duration: 2000,
         easing: 'easeInOutCubic'
+      },
+      interaction: {
+        intersect: false,
+        mode: 'index'
       }
     }
   });
