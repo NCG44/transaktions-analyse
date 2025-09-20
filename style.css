@@ -52,9 +52,9 @@ body {
   width: 80px;
   height: 60px;
   object-fit: contain;
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
-  background: transparent;
-  mix-blend-mode: multiply;
+  filter: brightness(0) invert(1) drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+  display: block;
+  margin: 0 auto;
 }
 
 .header h1 {
@@ -197,6 +197,14 @@ input:focus {
 
 .value.professional:hover {
   box-shadow: 0 15px 35px rgba(9, 181, 218, 0.2);
+}
+
+.value.neon-permanent {
+  color: var(--neon-green) !important;
+  text-shadow: 0 0 15px var(--neon-green) !important;
+  background: rgba(0, 255, 102, 0.1) !important;
+  border: 2px solid var(--neon-green) !important;
+  box-shadow: 0 0 25px rgba(0, 255, 102, 0.3) !important;
 }
 
 .cost-percentage {
