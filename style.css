@@ -54,7 +54,9 @@ body {
   object-fit: contain;
   display: block;
   margin: 0 auto;
-  filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+  filter: contrast(200%) brightness(150%) drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+  mix-blend-mode: screen;
+  background: transparent;
 }
 
 .header h1 {
