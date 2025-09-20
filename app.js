@@ -286,24 +286,21 @@ function drawValueChart(deltaValue) {
   
   if (valueChart) valueChart.destroy();
   
-  // Create curved growth data points following the attached graph logic
+  // Create curved growth data points from 2025 to 2027 only
   const baseValue = 143000; // Starting property value
   const finalValue = baseValue + deltaValue; // Final property value
   
-  // Generate curved growth from Sep 2025 to Jan 2027 (16 months)
+  // Generate curved growth from 2025 to 2027
   const growthData = [
-    baseValue, // Sep 2025 - starting point
-    baseValue + (deltaValue * 0.05), // Jan 2026 - minimal growth
-    baseValue + (deltaValue * 0.15), // May 2026 - slow growth
-    baseValue + (deltaValue * 0.35), // Sep 2026 - moderate growth
-    baseValue + (deltaValue * 0.70), // Nov 2026 - accelerated growth
-    finalValue // Jan 2027 - completion
+    baseValue, // 2025 - starting point
+    baseValue + (deltaValue * 0.15), // 2026 - slow growth
+    finalValue // 2027 - completion
   ];
   
   valueChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: ['Sep 2025', 'Jan 2026', 'Mai 2026', 'Sep 2026', 'Nov 2026', 'Jan 2027'],
+      labels: ['2025', '2026', '2027'],
       datasets: [{
         label: 'Værdiforøgelse',
         data: growthData,
@@ -311,12 +308,12 @@ function drawValueChart(deltaValue) {
         backgroundColor: 'rgba(9, 181, 218, 0.1)',
         fill: true,
         tension: 0.4,
-        pointBackgroundColor: ['#09B5DA', '#09B5DA', '#09B5DA', '#09B5DA', '#09B5DA', '#00ff66'],
+        pointBackgroundColor: ['#09B5DA', '#09B5DA', '#00ff66'],
         pointBorderColor: '#ffffff',
         pointBorderWidth: 3,
-        pointRadius: [6, 6, 6, 6, 6, 12],
-        pointHoverRadius: [10, 10, 10, 10, 10, 16],
-        pointHoverBackgroundColor: ['#09B5DA', '#09B5DA', '#09B5DA', '#09B5DA', '#09B5DA', '#00ff66'],
+        pointRadius: [6, 6, 12],
+        pointHoverRadius: [10, 10, 16],
+        pointHoverBackgroundColor: ['#09B5DA', '#09B5DA', '#00ff66'],
         borderWidth: 4
       }]
     },
