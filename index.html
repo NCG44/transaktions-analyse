@@ -1,86 +1,221 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>NORDEN CAPITAL GROUP – Transaktionsanalyse</title>
-<link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Norden Capital Group - Transaktions Analyse</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<div class="app-container">
-  <header class="header">
-    <h1>NORDEN CAPITAL GROUP</h1>
-    <h2>Transaktionsanalyse</h2>
-  </header>
+    <header class="app-header">
+        <div class="container">
+            <h1 class="company-title">Norden Capital Group</h1>
+            <h2 class="app-subtitle">Transaktions Analyse</h2>
+            <div class="projektet-afkast">Projekteret Afkast</div>
+        </div>
+    </header>
 
-  <nav class="breadcrumbs">
-    <div class="crumb active" id="crumb-1">1. Info</div>
-    <div class="crumb" id="crumb-2">2. Indtægtsberegning</div>
-    <div class="crumb" id="crumb-3">3. Omkostninger</div>
-    <div class="crumb" id="crumb-4">4. Netto</div>
-    <div class="crumb" id="crumb-5">5. Exit</div>
-    <div class="crumb" id="crumb-6">6. Afkast</div>
-    <div class="crumb" id="crumb-7">7. Oversigt</div>
-  </nav>
+    <main class="container">
+        <!-- Information Section -->
+        <section class="calc-section" id="info-section">
+            <div class="card">
+                <div class="section-header">
+                    <h3>Information</h3>
+                    <div class="progress-indicator" data-progress="0"></div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="date">Dato</label>
+                        <input type="date" id="date" class="form-control modern-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="name">Navn</label>
+                        <input type="text" id="name" class="form-control modern-input" placeholder="Indtast dit navn">
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <section id="section-1" class="section active">
-    <h3>1. Information</h3>
-    <label for="date">Dato:</label>
-    <input type="date" id="date" />
-    <label for="name">Navn:</label>
-    <input type="text" id="name" />
-    <button id="btn-1" class="next-btn">Næste</button>
-  </section>
+        <!-- Revenue Calculation Section -->
+        <section class="calc-section locked" id="revenue-section">
+            <div class="card">
+                <div class="section-header">
+                    <h3>Indtægts Beregning</h3>
+                    <div class="progress-indicator" data-progress="0"></div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="price_per_night">Pris pr. nat (Booking.com)</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="price_per_night" class="form-control modern-input" placeholder="150" min="0" step="1">
+                            <span class="input-suffix">EUR</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="rental_nights">Lejede nætter om året</label>
+                        <input type="number" id="rental_nights" class="form-control modern-input" placeholder="146" min="0" step="1">
+                    </div>
+                    <div class="form-group result-field">
+                        <label class="form-label">Brutto lejeindtægter</label>
+                        <div class="calculated-result">
+                            <span class="result-value" id="gross_rental">0</span>
+                            <span class="result-suffix">EUR</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <section id="section-2" class="section">
-    <h3>2. Indtægtsberegning</h3>
-    <label for="prisPrNat">Pris pr. nat:</label>
-    <input type="number" id="prisPrNat" placeholder="EUR" />
-    <label for="lejedeNaetter">Lejede nætter pr år:</label>
-    <input type="number" id="lejedeNaetter" placeholder="Nætter" />
-    <div id="brutto" class="value neon-green">Brutto lejeindtægter: 0 EUR</div>
-    <button id="btn-2" class="next-btn">Næste</button>
-  </section>
+        <!-- Operating Costs Section -->
+        <section class="calc-section locked" id="costs-section">
+            <div class="card">
+                <div class="section-header">
+                    <h3>Drift Omkostninger</h3>
+                    <div class="progress-indicator" data-progress="0"></div>
+                </div>
+                <div class="costs-layout">
+                    <div class="costs-details">
+                        <div class="cost-item">
+                            <label class="form-label">Udlejningselskab (20% af omsætning)</label>
+                            <div class="calculated-result">
+                                <span class="result-value" id="management_cost">0</span>
+                                <span class="result-suffix">EUR</span>
+                            </div>
+                        </div>
+                        <div class="cost-item">
+                            <label class="form-label">Vedligeholdelse og reparationer</label>
+                            <div class="calculated-result">
+                                <span class="result-value">660</span>
+                                <span class="result-suffix">EUR</span>
+                            </div>
+                        </div>
+                        <div class="cost-item total-costs">
+                            <label class="form-label">Samlede årlige omkostninger</label>
+                            <div class="calculated-result">
+                                <span class="result-value" id="total_costs">660</span>
+                                <span class="result-suffix">EUR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-wrapper" style="position: relative; height: 300px;">
+                            <canvas id="costsChart"></canvas>
+                        </div>
+                        <div class="chart-message">Omkostninger er kun <span class="highlight">23%</span> af din omsætning</div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <section id="section-3" class="section">
-    <h3>3. Omkostninger</h3>
-    <div id="udlejning" class="value orange">Udlejningsselskab (20%): 0 EUR</div>
-    <div id="maintenance" class="value blue">Vedligeholdelse: 660 EUR</div>
-    <div id="totalCost" class="value orange">Samlede omkostninger: 0 EUR</div>
-    <div class="pie-chart-container"><canvas id="pieChart"></canvas></div>
-    <button id="btn-3" class="next-btn">Næste</button>
-  </section>
+        <!-- Net Income Section -->
+        <section class="calc-section locked" id="income-section">
+            <div class="card">
+                <div class="section-header">
+                    <h3>Netto Indkomst</h3>
+                    <div class="progress-indicator" data-progress="0"></div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group result-field">
+                        <label class="form-label">Netto lejeindtægt pr. år</label>
+                        <div class="calculated-result glow-effect">
+                            <span class="result-value" id="net_income">0</span>
+                            <span class="result-suffix">EUR</span>
+                        </div>
+                    </div>
+                    <div class="form-group result-field">
+                        <label class="form-label">Projekteret årlig rente</label>
+                        <div class="calculated-result glow-effect">
+                            <span class="result-value" id="annual_return">0</span>
+                            <span class="result-suffix">%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="return-progress"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <section id="section-4" class="section">
-    <h3>4. Netto</h3>
-    <div id="netto" class="value neon-green">Netto lejeindtægt: 0 EUR</div>
-    <button id="btn-4" class="next-btn">Næste</button>
-  </section>
+        <!-- Exit Strategy Section -->
+        <section class="calc-section locked" id="exit-section">
+            <div class="card">
+                <div class="section-header">
+                    <h3>Exit Strategi</h3>
+                    <div class="progress-indicator" data-progress="0"></div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="purchase_price">Købspris</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="purchase_price" class="form-control modern-input" placeholder="148000" min="0" step="1000">
+                            <span class="input-suffix">EUR</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="discount_factor">Diskonteringsfaktor</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="discount_factor" class="form-control modern-input" placeholder="9" min="0" step="0.1">
+                            <span class="input-suffix">%</span>
+                        </div>
+                    </div>
+                    <div class="form-group result-field">
+                        <label class="form-label">Projekteret exit pris</label>
+                        <div class="calculated-result highlight-result">
+                            <span class="result-value" id="exit_price">0</span>
+                            <span class="result-suffix">EUR</span>
+                        </div>
+                    </div>
+                    <div class="form-group result-field">
+                        <label class="form-label">Værdiforøgelse/Delta</label>
+                        <div class="calculated-result glow-effect">
+                            <span class="result-value" id="value_increase">0</span>
+                            <span class="result-suffix">EUR</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <section id="section-5" class="section">
-    <h3>5. Exit</h3>
-    <label for="diskonto">Diskonteringsfaktor (%):</label>
-    <input type="number" id="diskonto" />
-    <div id="exitPrice" class="value neon-green">Projekteret exit pris: 0 EUR</div>
-    <div id="delta" class="value neon-green">Værdiforøgelse/Delta: 0 EUR</div>
-    <button id="btn-5" class="next-btn">Næste</button>
-  </section>
+        <!-- Accumulated Return Section -->
+        <section class="calc-section locked" id="return-section">
+            <div class="card">
+                <div class="section-header">
+                    <h3>Akkumuleret Afkast</h3>
+                    <div class="progress-indicator" data-progress="0"></div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group result-field">
+                        <label class="form-label">Lejeindtægt/Cashflow (3 år)</label>
+                        <div class="calculated-result glow-effect">
+                            <span class="result-value" id="three_year_cashflow">0</span>
+                            <span class="result-suffix">EUR</span>
+                        </div>
+                    </div>
+                    <div class="form-group result-field final-result">
+                        <label class="form-label">TOTALT AFKAST</label>
+                        <div class="calculated-result celebration-result">
+                            <span class="result-value" id="total_return">0</span>
+                            <span class="result-suffix">EUR</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="achievement-unlock hidden" id="final-achievement">
+                    <div class="achievement-icon">🎉</div>
+                    <div class="achievement-text">Beregning Fuldført!</div>
+                </div>
+            </div>
+        </section>
 
-  <section id="section-6" class="section">
-    <h3>6. Akkumuleret afkast</h3>
-    <div id="cash3" class="value neon-green">Cashflow (3 år): 0 EUR</div>
-    <div id="totalReturn" class="value neon-green">TOTALT AFKAST: 0 EUR</div>
-    <button id="btn-6" class="next-btn">Se oversigt</button>
-  </section>
+        <!-- Sample Data Button for Testing -->
+        <div class="test-controls" style="text-align: center; margin: var(--space-32) 0;">
+            <button id="load-sample" class="btn btn--primary">Load Sample Data (Test)</button>
+            <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-top: var(--space-8);">
+                Or press Ctrl+L (Cmd+L) to load sample data quickly
+            </p>
+        </div>
+    </main>
 
-  <section id="section-7" class="section">
-    <h3>7. Investerings oversigt</h3>
-    <div class="histogram-container"><canvas id="histogram"></canvas></div>
-    <div class="line-chart-container"><canvas id="lineChart"></canvas></div>
-  </section>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
