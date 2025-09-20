@@ -46,7 +46,7 @@ document.getElementById('name').addEventListener('input', function () {
   document.getElementById('btn-1').style.display = this.value.trim() ? 'block' : 'none';
 });
 
-let pieChart, lineChart;
+let pieChart, rentalChart, valueChart;
 
 ['prisPrNat', 'lejedeNaetter', 'diskonto'].forEach(id =>
   document.getElementById(id).addEventListener('input', updateCalculations)
@@ -206,46 +206,36 @@ function initCharts() {
   
   if (netValue === 0) return;
 
-  const ctx = document.getElementById('lineChart').getContext('2d');
+  // Rental Income Chart
+  drawRentalChart(netValue);
   
-  if (lineChart) lineChart.destroy();
+  // Value Appreciation Chart
+  drawValueChart(deltaValue);
+}
+
+function drawRentalChart(netValue) {
+  const ctx = document.getElementById('rentalChart').getContext('2d');
   
-  // Timeline: Rental income starts Jan 2027, Value appreciation happens at completion (2027)
-  lineChart = new Chart(ctx, {
+  if (rentalChart) rentalChart.destroy();
+  
+  rentalChart = new Chart(ctx, {
     type: 'line',
     data: {
       labels: ['2027', '2028', '2029', '2030'],
-      datasets: [
-        {
-          label: 'Akkumuleret lejeindkomst (fra 2027)',
-          data: [netValue, netValue * 2, netValue * 3, netValue * 4],
-          borderColor: '#00ff66',
-          backgroundColor: 'rgba(0, 255, 102, 0.1)',
-          fill: true,
-          tension: 0.4,
-          pointBackgroundColor: '#00ff66',
-          pointBorderColor: '#ffffff',
-          pointBorderWidth: 3,
-          pointRadius: 8,
-          pointHoverRadius: 12,
-          borderWidth: 4
-        },
-        {
-          label: 'Værdiforøgelse (2027 completion)',
-          data: [deltaValue, deltaValue, deltaValue, deltaValue],
-          borderColor: '#09B5DA',
-          backgroundColor: 'rgba(9, 181, 218, 0.1)',
-          fill: false,
-          tension: 0,
-          pointBackgroundColor: '#09B5DA',
-          pointBorderColor: '#ffffff',
-          pointBorderWidth: 3,
-          pointRadius: 8,
-          pointHoverRadius: 12,
-          borderWidth: 4,
-          borderDash: [10, 5]
-        }
-      ]
+      datasets: [{
+        label: 'Akkumuleret lejeindtægt',
+        data: [netValue, netValue * 2, netValue * 3, netValue * 4],
+        borderColor: '#00ff66',
+        backgroundColor: 'rgba(0, 255, 102, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#00ff66',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 3,
+        pointRadius: 8,
+        pointHoverRadius: 12,
+        borderWidth: 4
+      }]
     },
     options: {
       responsive: true,
@@ -254,35 +244,27 @@ function initCharts() {
         x: {
           ticks: { 
             color: '#ffffff',
-            font: { size: 14, weight: '600' }
+            font: { size: 12, weight: '600' }
           },
           grid: { 
             color: 'rgba(255, 255, 255, 0.1)',
-            borderColor: '#09B5DA'
+            borderColor: '#00ff66'
           }
         },
         y: {
           ticks: {
             color: '#ffffff',
-            font: { size: 14, weight: '600' },
+            font: { size: 12, weight: '600' },
             callback: value => value.toLocaleString('da-DK') + ' EUR'
           },
           grid: { 
             color: 'rgba(255, 255, 255, 0.1)',
-            borderColor: '#09B5DA'
+            borderColor: '#00ff66'
           }
         }
       },
       plugins: {
-        legend: {
-          position: 'top',
-          labels: {
-            color: '#ffffff',
-            font: { size: 14, weight: '600' },
-            padding: 20,
-            usePointStyle: true
-          }
-        },
+        legend: { display: false },
         tooltip: {
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
           titleColor: '#00ff66',
@@ -293,20 +275,76 @@ function initCharts() {
       },
       animation: {
         duration: 2000,
-        easing: 'easeInOutCubic',
-        onProgress: function(animation) {
-          const progress = animation.currentStep / animation.numSteps;
-          this.data.datasets.forEach((dataset, index) => {
-            const meta = this.getDatasetMeta(index);
-            meta.data.forEach((point, pointIndex) => {
-              if (pointIndex / meta.data.length <= progress) {
-                point.options.pointRadius = 8;
-              } else {
-                point.options.pointRadius = 0;
-              }
-            });
-          });
+        easing: 'easeInOutCubic'
+      }
+    }
+  });
+}
+
+function drawValueChart(deltaValue) {
+  const ctx = document.getElementById('valueChart').getContext('2d');
+  
+  if (valueChart) valueChart.destroy();
+  
+  valueChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['2025', '2026', '2027', '2028', '2029', '2030'],
+      datasets: [{
+        label: 'Værdiforøgelse',
+        data: [0, 0, deltaValue, deltaValue, deltaValue, deltaValue],
+        borderColor: '#09B5DA',
+        backgroundColor: 'rgba(9, 181, 218, 0.1)',
+        fill: false,
+        tension: 0,
+        pointBackgroundColor: '#09B5DA',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 3,
+        pointRadius: 8,
+        pointHoverRadius: 12,
+        borderWidth: 4,
+        stepped: 'after'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          ticks: { 
+            color: '#ffffff',
+            font: { size: 12, weight: '600' }
+          },
+          grid: { 
+            color: 'rgba(255, 255, 255, 0.1)',
+            borderColor: '#09B5DA'
+          }
+        },
+        y: {
+          ticks: {
+            color: '#ffffff',
+            font: { size: 12, weight: '600' },
+            callback: value => value.toLocaleString('da-DK') + ' EUR'
+          },
+          grid: { 
+            color: 'rgba(255, 255, 255, 0.1)',
+            borderColor: '#09B5DA'
+          }
         }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleColor: '#09B5DA',
+          bodyColor: '#ffffff',
+          borderColor: '#09B5DA',
+          borderWidth: 2
+        }
+      },
+      animation: {
+        duration: 2000,
+        easing: 'easeInOutCubic'
       }
     }
   });
