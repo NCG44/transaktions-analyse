@@ -4,9 +4,9 @@
   --norden-gradient: linear-gradient(116deg, #0C3C60 35.15625%, #09B5DA 100%);
   --blue: #0C3C60;
   --light-blue: #09B5DA;
-  --orange: #ff7f00;
   --white: #ffffff;
   --dark-panel: #1e2128;
+  --professional-blue: #2c5282;
 }
 
 * {
@@ -24,7 +24,7 @@ body {
 }
 
 .app-container {
-  max-width: 700px;
+  max-width: 900px;
   margin: 2rem auto;
   padding: 1rem;
 }
@@ -35,7 +35,7 @@ body {
   padding: 2rem 1rem;
   background: var(--norden-gradient);
   border-radius: 15px;
-  box-shadow: 0 8px 32px rgba(0, 255, 102, 0.1);
+  box-shadow: 0 8px 32px rgba(12, 60, 96, 0.3);
   transform-style: preserve-3d;
   transition: transform 0.3s ease;
 }
@@ -57,8 +57,7 @@ body {
 
 .header h1 {
   font-size: 2.2rem;
-  color: var(--neon-green);
-  text-shadow: 0 0 20px var(--neon-green);
+  color: var(--white);
   margin-bottom: 0.5rem;
   font-weight: 700;
 }
@@ -95,8 +94,8 @@ body {
   opacity: 1;
   color: var(--white);
   font-weight: 700;
-  border: 1px solid var(--neon-green);
-  box-shadow: 0 0 15px rgba(0, 255, 102, 0.3);
+  border: 1px solid var(--light-blue);
+  box-shadow: 0 0 15px rgba(9, 181, 218, 0.3);
 }
 
 .section {
@@ -110,6 +109,7 @@ body {
   transform: translateY(20px) perspective(800px);
   opacity: 0;
   transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
 }
 
 .section.active {
@@ -138,8 +138,7 @@ body {
   text-align: center;
   font-weight: 700;
   font-size: 1.8rem;
-  color: var(--neon-green);
-  text-shadow: 0 0 20px var(--neon-green);
+  color: var(--light-blue);
 }
 
 label {
@@ -165,65 +164,39 @@ input {
 
 input:focus {
   outline: none;
-  border-color: var(--neon-green);
-  box-shadow: 0 0 20px rgba(0, 255, 102, 0.4);
+  border-color: var(--light-blue);
+  box-shadow: 0 0 20px rgba(9, 181, 218, 0.4);
   transform: translateY(-2px);
 }
 
 .value {
-  background: rgba(0, 255, 102, 0.05);
-  color: var(--neon-green);
   font-weight: 700;
   font-size: 1.3rem;
   margin: 1.5rem 0;
   padding: 1.5rem;
   border-radius: 12px;
   text-align: center;
-  text-shadow: 0 0 15px var(--neon-green);
-  border: 2px solid rgba(0, 255, 102, 0.3);
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
-}
-
-.value.animate-3d {
   transform-style: preserve-3d;
-  transition: transform 0.3s ease;
 }
 
-.value.animate-3d:hover {
-  transform: perspective(800px) rotateX(10deg) translateZ(10px);
-  box-shadow: 0 15px 35px rgba(0, 255, 102, 0.2);
-}
-
-.value.neon-green {
-  background: rgba(0, 255, 102, 0.1);
-  color: var(--neon-green);
-  text-shadow: 0 0 20px var(--neon-green);
-  border: 2px solid var(--neon-green);
-  box-shadow: 0 0 25px rgba(0, 255, 102, 0.3);
-}
-
-.value.orange {
-  background: rgba(255, 127, 0, 0.1);
-  color: var(--orange);
-  text-shadow: 0 0 15px var(--orange);
-  border: 2px solid var(--orange);
-  box-shadow: 0 0 20px rgba(255, 127, 0, 0.2);
-}
-
-.value.blue {
+.value.professional {
   background: rgba(12, 60, 96, 0.2);
   color: var(--light-blue);
-  text-shadow: 0 0 15px var(--light-blue);
-  border: 2px solid var(--light-blue);
-  box-shadow: 0 0 20px rgba(9, 181, 218, 0.2);
+  border: 2px solid rgba(9, 181, 218, 0.3);
+  box-shadow: 0 0 15px rgba(9, 181, 218, 0.1);
+}
+
+.value.professional:hover {
+  transform: perspective(800px) rotateX(10deg) translateZ(10px);
+  box-shadow: 0 15px 35px rgba(9, 181, 218, 0.2);
 }
 
 .cost-percentage {
   text-align: center;
   font-size: 1.2rem;
-  color: var(--neon-green);
-  text-shadow: 0 0 15px var(--neon-green);
+  color: var(--light-blue);
   margin: 1rem 0;
   font-weight: 600;
 }
@@ -243,12 +216,12 @@ input:focus {
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 1px;
-  box-shadow: 0 8px 25px rgba(0, 255, 102, 0.2);
+  box-shadow: 0 8px 25px rgba(9, 181, 218, 0.2);
 }
 
 .next-btn:hover {
   transform: translateY(-3px);
-  box-shadow: 0 15px 35px rgba(0, 255, 102, 0.4);
+  box-shadow: 0 15px 35px rgba(9, 181, 218, 0.4);
 }
 
 .pie-chart-container,
@@ -269,13 +242,62 @@ input:focus {
   gap: 2rem;
 }
 
+.currency-conversion {
+  background: rgba(12, 60, 96, 0.1);
+  border-radius: 15px;
+  padding: 2rem;
+  border: 1px solid rgba(9, 181, 218, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.currency-conversion h4 {
+  color: var(--light-blue);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.4rem;
+}
+
+.conversion-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.conversion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: rgba(9, 181, 218, 0.1);
+  border-radius: 8px;
+  border: 1px solid rgba(9, 181, 218, 0.2);
+}
+
+.conversion-item.total {
+  border: 2px solid var(--light-blue);
+  background: rgba(9, 181, 218, 0.2);
+}
+
+.conversion-item .label {
+  color: var(--white);
+  font-weight: 600;
+}
+
+.conversion-item .amount {
+  color: var(--light-blue);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
 canvas {
   border-radius: 12px;
-  filter: drop-shadow(0 4px 15px rgba(0, 255, 102, 0.1));
+  filter: drop-shadow(0 4px 15px rgba(9, 181, 218, 0.1));
 }
 
 .counting-animation {
   animation: pulse 0.6s ease-in-out;
+  color: var(--neon-green) !important;
+  text-shadow: 0 0 15px var(--neon-green);
 }
 
 @keyframes pulse {
@@ -300,6 +322,7 @@ canvas {
   .app-container {
     padding: 0.5rem;
     margin: 1rem auto;
+    max-width: 95%;
   }
   
   .section {
@@ -317,5 +340,11 @@ canvas {
   .crumb {
     flex: 1 1 30%;
     margin-bottom: 0.5rem;
+  }
+  
+  .conversion-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
   }
 }
