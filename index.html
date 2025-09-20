@@ -78,28 +78,35 @@
   </section>
 
   <section id="section-7" class="section">
-    <h3>7. Investerings oversigt</h3>
-    <div class="chart-grid">
-      <div class="line-chart-container"><canvas id="lineChart"></canvas></div>
-      <div class="currency-conversion">
-        <h4>Valutaomregning (EUR → DKK)</h4>
-        <div class="conversion-grid">
-          <div class="conversion-item">
-            <span class="label">Akkumuleret lejeindtægt (3 år fra 2027):</span>
-            <span id="rentalDKK" class="amount">0 DKK</span>
-          </div>
-          <div class="conversion-item">
-            <span class="label">Værdiforøgelse (2025-2027):</span>
-            <span id="valueDKK" class="amount">330.000 DKK</span>
-          </div>
-          <div class="conversion-item total">
-            <span class="label">Total akkumuleret afkast:</span>
-            <span id="totalDKK" class="amount">0 DKK</span>
-          </div>
+    <h3>7. Investeringsoversigt</h3>
+    <div class="charts-container">
+      <div class="line-chart-container">
+        <h4>Akkumuleret lejeindtægt</h4>
+        <canvas id="rentalChart"></canvas>
+      </div>
+      <div class="line-chart-container">
+        <h4>Værdiforøgelse</h4>
+        <canvas id="valueChart"></canvas>
+      </div>
+    </div>
+    <div class="currency-conversion">
+      <h4>Valutaomregning (EUR → DKK)</h4>
+      <div class="conversion-grid">
+        <div class="conversion-item">
+          <span class="label">Akkumuleret lejeindtægt (3 år fra 2027):</span>
+          <span id="rentalDKK" class="amount">0 DKK</span>
+        </div>
+        <div class="conversion-item">
+          <span class="label">Værdiforøgelse (2025-2027):</span>
+          <span id="valueDKK" class="amount">330.000 DKK</span>
+        </div>
+        <div class="conversion-item total">
+          <span class="label">Total akkumuleret afkast:</span>
+          <span id="totalDKK" class="amount">0 DKK</span>
         </div>
       </div>
-      <div id="finalTotalReturn" class="value professional">TOTALT AFKAST: 0 EUR</div>
     </div>
+    <div id="finalTotalReturn" class="value professional">TOTALT AFKAST: 0 EUR</div>
   </section>
 </div>
 
