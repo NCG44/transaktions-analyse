@@ -111,7 +111,7 @@ function animateValue(id, targetValue, suffix = ' EUR') {
   const element = document.getElementById(id);
   if (!element) return;
 
-  element.classList.add('counting-animation', 'slot-machine-effect');
+  element.classList.add('counting-animation');
   
   let currentValue = 0;
   const increment = targetValue / 80;
@@ -124,7 +124,7 @@ function animateValue(id, targetValue, suffix = ' EUR') {
       clearInterval(interval);
       currentValue = targetValue;
       setTimeout(() => {
-        element.classList.remove('counting-animation', 'slot-machine-effect');
+        element.classList.remove('counting-animation');
       }, 200);
     }
     
@@ -146,14 +146,14 @@ function drawPieChart(data) {
       datasets: [{
         data: data,
         backgroundColor: [
-          'rgba(9, 181, 218, 0.8)',
-          'rgba(12, 60, 96, 0.8)',
-          'rgba(9, 181, 218, 0.6)'
+          'rgba(0, 255, 102, 0.8)',
+          'rgba(255, 127, 0, 0.8)',
+          'rgba(28, 110, 164, 0.8)'
         ],
         borderColor: [
-          '#09B5DA',
-          '#0C3C60',
-          '#09B5DA'
+          '#00ff66',
+          '#ff7f00',
+          '#1c6ea4'
         ],
         borderWidth: 3,
         hoverOffset: 15
@@ -174,9 +174,9 @@ function drawPieChart(data) {
         },
         tooltip: {
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
-          titleColor: '#09B5DA',
+          titleColor: '#00ff66',
           bodyColor: '#ffffff',
-          borderColor: '#09B5DA',
+          borderColor: '#00ff66',
           borderWidth: 1
         }
       },
@@ -200,14 +200,15 @@ function initCharts() {
   
   if (lineChart) lineChart.destroy();
   
+  // Timeline: Sep 2025 -> Jan 2027 (16 months)
   lineChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: ['År 1', 'År 2', 'År 3'],
+      labels: ['Sep 2025', 'År 2026', 'Jan 2027'],
       datasets: [
         {
           label: 'Akkumuleret lejeindkomst',
-          data: [netValue, netValue * 2, netValue * 3],
+          data: [0, netValue * 1.3, netValue * 1.6],
           borderColor: '#00ff66',
           backgroundColor: 'rgba(0, 255, 102, 0.1)',
           fill: true,
@@ -220,8 +221,8 @@ function initCharts() {
           borderWidth: 4
         },
         {
-          label: 'Værdiforøgelse',
-          data: [0, deltaValue * 0.6, deltaValue],
+          label: 'Værdiforøgelse (Jan 2027)',
+          data: [0, deltaValue * 0.7, deltaValue],
           borderColor: '#09B5DA',
           backgroundColor: 'rgba(9, 181, 218, 0.1)',
           fill: false,
