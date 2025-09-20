@@ -301,8 +301,8 @@ input:focus {
 
 .conversion-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 0.8rem;
   padding: 1rem;
   background: rgba(9, 181, 218, 0.1);
   border-radius: 8px;
@@ -317,9 +317,29 @@ input:focus {
 .conversion-item .label {
   color: var(--white);
   font-weight: 600;
+  text-align: center;
 }
 
-.conversion-item .amount {
+.conversion-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.eur-amount {
+  color: var(--white);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.arrow {
+  color: var(--light-blue);
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.dkk-amount {
   color: var(--light-blue);
   font-weight: 700;
   font-size: 1.1rem;
@@ -373,9 +393,8 @@ canvas {
     gap: 1rem;
   }
   
-  .conversion-item {
+  .conversion-display {
     flex-direction: column;
-    text-align: center;
     gap: 0.5rem;
   }
 }
