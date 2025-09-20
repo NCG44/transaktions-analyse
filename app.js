@@ -1,106 +1,296 @@
-// Set date to today
+// Set today's date
 document.getElementById('date').valueAsDate = new Date();
 
-// Section management and breadcrumbs
-const sections = document.querySelectorAll('.section');
-let current = 1;
-function showSection(i) {
-  sections[current-1].classList.remove('active');
-  document.getElementById(`crumb-${current}`).classList.remove('active');
-  current = i;
-  sections[current-1].classList.add('active');
-  document.getElementById(`crumb-${current}`).classList.add('active');
-  sections[current-1].scrollIntoView({behavior:'smooth',block:'center'});
-  if (current === 7) setTimeout(initLineChart,500);
-}
-for (let i=1; i<=6; i++) {
-  document.getElementById(`btn-${i}`).addEventListener('click', () => showSection(i+1));
+const panels = document.querySelectorAll('.section');
+const crumbs = document.querySelectorAll('.crumb');
+
+// Intersection Observer for scroll animations
+const observerOptions = {
+  threshold: 0.3,
+  rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('animate-on-scroll');
+      // Trigger chart animations if this is the overview section
+      if (entry.target.id === 'section-7') {
+        setTimeout(initCharts, 300);
+      }
+    }
+  });
+}, observerOptions);
+
+// Observe all sections for scroll animations
+panels.forEach(panel => observer.observe(panel));
+
+function showPanel(i) {
+  panels[i].classList.add('active');
+  crumbs[i].classList.add('active');
+  panels[i].scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-// Enable first next button
-const nameInput = document.getElementById('name');
-nameInput.addEventListener('input', () => {
-  document.getElementById('btn-1').style.display = nameInput.value.trim() ? 'block' : 'none';
+showPanel(0);
+
+document.querySelectorAll('.next-btn').forEach((btn, idx) => {
+  btn.addEventListener('click', () => {
+    if (idx + 1 < panels.length) {
+      showPanel(idx + 1);
+    }
+  });
 });
 
-// Calculation listeners
-['prisPrNat','lejedeNaetter','diskonto'].forEach(id =>
-  document.getElementById(id).addEventListener('input', updateCalc)
+document.getElementById('name').addEventListener('input', function () {
+  document.getElementById('btn-1').style.display = this.value.trim() ? 'block' : 'none';
+});
+
+let pieChart, lineChart;
+
+['prisPrNat', 'lejedeNaetter', 'diskonto'].forEach(id =>
+  document.getElementById(id).addEventListener('input', updateCalculations)
 );
-let pieChart;
 
-function updateCalc() {
-  const p = +document.getElementById('prisPrNat').value || 0;
-  const n = +document.getElementById('lejedeNaetter').value || 0;
-  const rev = p * n;
-  if (rev) {
-    animate('brutto', rev);
-    document.getElementById('btn-2').style.display = 'block';
+function updateCalculations() {
+  const pricePerNight = +document.getElementById('prisPrNat').value || 0;
+  const rentedNights = +document.getElementById('lejedeNaetter').value || 0;
+  const revenue = pricePerNight * rentedNights;
+
+  if (revenue) {
+    animateValue('brutto', revenue);
   }
-  const cost = rev * 0.2, maint = 660, tot = cost + maint;
-  if (cost) {
-    animate('udlejning', cost);
-    animate('totalCost', tot);
-    drawPie([rev-cost, cost, maint]);
-    document.getElementById('btn-3').style.display = 'block';
+
+  const managementFee = revenue * 0.2;
+  const maintenanceCost = 660;
+  const totalCosts = managementFee + maintenanceCost;
+
+  if (managementFee) {
+    animateValue('udlejning', managementFee);
+    animateValue('totalCost', totalCosts);
+    drawPieChart([revenue - totalCosts, managementFee, maintenanceCost]);
   }
-  const net = rev - tot;
-  if (net) {
-    animate('netto', net);
-    document.getElementById('btn-4').style.display = 'block';
+
+  const netRevenue = revenue - totalCosts;
+  if (netRevenue) {
+    animateValue('netto', netRevenue);
   }
-  const d = +document.getElementById('diskonto').value || 0;
-  if (d && net) {
-    const exitPrice = net / (d/100);
-    animate('exitPrice', exitPrice);
-    const delta = exitPrice - 143000;
-    animateWithDKK('delta', delta);
-    const cash3 = net * 3;
-    animateWithDKK('cash3', cash3);
-    const totalRet = cash3 + delta;
-    animateWithDKK('totalReturn', totalRet);
-    document.getElementById('btn-5').style.display = 'block';
-    document.getElementById('btn-6').style.display = 'block';
+
+  const discountFactor = +document.getElementById('diskonto').value || 0;
+  if (discountFactor && netRevenue) {
+    // Automatic calculation: exit price = net annual income / discount factor
+    const projectedExitPrice = (netRevenue / (discountFactor / 100));
+    animateValue('exitPrice', projectedExitPrice);
+
+    const deltaValue = projectedExitPrice - 143000;
+    animateValue('delta', deltaValue);
+    
+    const projectedReturn = deltaValue + netRevenue;
+    animateValue('projectedReturn', projectedReturn);
+
+    const cashflow3Years = netRevenue * 3;
+    animateValue('cash3', cashflow3Years);
+
+    const totalReturn = cashflow3Years + deltaValue;
+    animateValue('totalReturn', totalReturn);
+    animateValue('finalTotalReturn', totalReturn);
   }
 }
 
-function animate(id, val, suffix=' EUR') {
-  const el = document.getElementById(id);
-  let cur=0, inc=val/60;
-  el.classList.add('count-animation');
-  const t = setInterval(() => {
-    cur += inc;
-    if (cur >= val) { clearInterval(t); cur = val; setTimeout(() => el.classList.remove('count-animation'), 100); }
-    const txt = `${Math.round(cur).toLocaleString('da-DK')}${suffix}`;
-    el.textContent = el.textContent.split(':')[0] + ': ' + txt;
-  }, 16);
+function animateValue(id, targetValue, suffix = ' EUR') {
+  const element = document.getElementById(id);
+  if (!element) return;
+
+  element.classList.add('counting-animation', 'slot-machine-effect');
+  
+  let currentValue = 0;
+  const increment = targetValue / 80; // Slower animation for psychological effect
+  const duration = 1200; // Total animation duration in ms
+  const stepTime = duration / 80;
+
+  const interval = setInterval(() => {
+    currentValue += increment;
+    if (currentValue >= targetValue) {
+      clearInterval(interval);
+      currentValue = targetValue;
+      setTimeout(() => {
+        element.classList.remove('counting-animation', 'slot-machine-effect');
+      }, 200);
+    }
+    
+    const displayValue = Math.round(currentValue);
+    const label = element.textContent.split(':')[0];
+    element.textContent = `${label}: ${displayValue.toLocaleString('da-DK')}${suffix}`;
+  }, stepTime);
 }
 
-function animateWithDKK(id, val) {
-  animate(id, val);
-  setTimeout(() => {
-    document.getElementById(id+'DKK').textContent = `(${Math.round(val*7.44).toLocaleString('da-DK')} DKK)`;
-  }, 1000);
-}
-
-function drawPie(data) {
+function drawPieChart(data) {
   const ctx = document.getElementById('pieChart').getContext('2d');
+  
   if (pieChart) pieChart.destroy();
+  
   pieChart = new Chart(ctx, {
     type: 'doughnut',
-    data: { labels:['Profit','Udlejning','Vedl.'], datasets:[{ data, backgroundColor:['#32CD32','#09B5DA','#0C3C60'] }] },
-    options: { plugins:{ legend:{ labels:{ color:'#fff' }}}, animation:{ animateScale:true, duration:1500 }, hoverOffset:20 }
+    data: {
+      labels: ['Profit', 'Udlejningsselskab (20%)', 'Vedligeholdelse'],
+      datasets: [{
+        data: data,
+        backgroundColor: [
+          'rgba(0, 255, 102, 0.8)',
+          'rgba(255, 127, 0, 0.8)',
+          'rgba(9, 181, 218, 0.8)'
+        ],
+        borderColor: [
+          '#00ff66',
+          '#ff7f00',
+          '#09B5DA'
+        ],
+        borderWidth: 3,
+        hoverOffset: 15
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            color: '#ffffff',
+            font: { size: 14, weight: '600' },
+            padding: 20,
+            usePointStyle: true
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleColor: '#00ff66',
+          bodyColor: '#ffffff',
+          borderColor: '#00ff66',
+          borderWidth: 1
+        }
+      },
+      animation: {
+        animateRotate: true,
+        animateScale: true,
+        duration: 1500,
+        easing: 'easeInOutQuart'
+      }
+    }
   });
 }
 
-function initLineChart() {
+function initCharts() {
+  const netValue = +document.getElementById('netto').textContent.replace(/\D/g, '') || 0;
+  const deltaValue = +document.getElementById('delta').textContent.replace(/\D/g, '') || 0;
+  
+  if (netValue === 0) return;
+
   const ctx = document.getElementById('lineChart').getContext('2d');
-  const net = +document.getElementById('netto').textContent.replace(/\D/g,'')||0;
-  new Chart(ctx, {
-    type:'line', data:{ labels:['År 1','År 2','År 3'], datasets:[{ data:[net,net*2,net*3], borderColor:'#32CD32', tension:0.3, fill:true, backgroundColor:'rgba(50,205,50,0.1)', pointHoverRadius:10, pointHoverBackgroundColor:'#32CD32' }] },
-    options:{ responsive:true, scales:{ x:{ ticks:{ color:'#fff' }, grid:{ color:'rgba(255,255,255,0.1)' } }, y:{ beginAtZero:true, ticks:{ color:'#fff', callback:v=>v.toLocaleString('da-DK')+' EUR' }, grid:{ color:'rgba(255,255,255,0.1)' } } }, plugins:{ legend:{ labels:{ color:'#fff' }}}, animation:{ duration:2000 } }
+  
+  if (lineChart) lineChart.destroy();
+  
+  // Animated line chart with two lines
+  lineChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['År 1', 'År 2', 'År 3'],
+      datasets: [
+        {
+          label: 'Akkumuleret lejeindkomst',
+          data: [netValue, netValue * 2, netValue * 3],
+          borderColor: '#00ff66',
+          backgroundColor: 'rgba(0, 255, 102, 0.1)',
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#00ff66',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 3,
+          pointRadius: 8,
+          pointHoverRadius: 12,
+          borderWidth: 4
+        },
+        {
+          label: 'Værdiforøgelse',
+          data: [0, deltaValue * 0.6, deltaValue],
+          borderColor: '#09B5DA',
+          backgroundColor: 'rgba(9, 181, 218, 0.1)',
+          fill: false,
+          tension: 0.4,
+          pointBackgroundColor: '#09B5DA',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 3,
+          pointRadius: 8,
+          pointHoverRadius: 12,
+          borderWidth: 4,
+          borderDash: [10, 5]
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          ticks: { 
+            color: '#ffffff',
+            font: { size: 14, weight: '600' }
+          },
+          grid: { 
+            color: 'rgba(255, 255, 255, 0.1)',
+            borderColor: '#09B5DA'
+          }
+        },
+        y: {
+          ticks: {
+            color: '#ffffff',
+            font: { size: 14, weight: '600' },
+            callback: value => value.toLocaleString('da-DK') + ' EUR'
+          },
+          grid: { 
+            color: 'rgba(255, 255, 255, 0.1)',
+            borderColor: '#09B5DA'
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            color: '#ffffff',
+            font: { size: 14, weight: '600' },
+            padding: 20,
+            usePointStyle: true
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleColor: '#00ff66',
+          bodyColor: '#ffffff',
+          borderColor: '#00ff66',
+          borderWidth: 2
+        }
+      },
+      animation: {
+        duration: 2000,
+        easing: 'easeInOutCubic',
+        onProgress: function(animation) {
+          // Progressive line drawing effect
+          const progress = animation.currentStep / animation.numSteps;
+          this.data.datasets.forEach((dataset, index) => {
+            const meta = this.getDatasetMeta(index);
+            meta.data.forEach((point, pointIndex) => {
+              if (pointIndex / meta.data.length <= progress) {
+                point.options.pointRadius = 8;
+              } else {
+                point.options.pointRadius = 0;
+              }
+            });
+          });
+        }
+      }
+    }
   });
 }
 
-// Initial call
-updateCalc();
+// Initialize calculations
+updateCalculations();
