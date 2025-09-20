@@ -24,7 +24,7 @@ body {
 }
 
 .app-container {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 2rem auto;
   padding: 1rem;
 }
@@ -238,8 +238,7 @@ input:focus {
   box-shadow: 0 15px 35px rgba(9, 181, 218, 0.4);
 }
 
-.pie-chart-container,
-.line-chart-container {
+.pie-chart-container {
   width: 100%;
   height: 350px;
   margin: 2rem 0;
@@ -250,10 +249,32 @@ input:focus {
   backdrop-filter: blur(10px);
 }
 
-.chart-grid {
-  display: flex;
-  flex-direction: column;
+.charts-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 2rem;
+  margin: 2rem 0;
+}
+
+.line-chart-container {
+  background: rgba(12, 60, 96, 0.1);
+  border-radius: 15px;
+  border: 1px solid rgba(9, 181, 218, 0.3);
+  backdrop-filter: blur(10px);
+  padding: 1rem;
+}
+
+.line-chart-container h4 {
+  color: var(--light-blue);
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.line-chart-container canvas {
+  width: 100% !important;
+  height: 300px !important;
 }
 
 .currency-conversion {
@@ -262,6 +283,7 @@ input:focus {
   padding: 2rem;
   border: 1px solid rgba(9, 181, 218, 0.3);
   backdrop-filter: blur(10px);
+  margin: 2rem 0;
 }
 
 .currency-conversion h4 {
@@ -344,6 +366,11 @@ canvas {
     margin-bottom: 0.5rem;
     height: auto;
     min-height: 50px;
+  }
+  
+  .charts-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
   
   .conversion-item {
