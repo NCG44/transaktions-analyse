@@ -52,9 +52,10 @@ body {
   width: 80px;
   height: 60px;
   object-fit: contain;
-  filter: brightness(0) invert(1) drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
   display: block;
   margin: 0 auto;
+  filter: invert(1) brightness(2) contrast(1.2) drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+  background: transparent;
 }
 
 .header h1 {
@@ -360,6 +361,30 @@ canvas {
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
   100% { transform: scale(1); }
+}
+
+@keyframes lineGlow {
+  0% { 
+    filter: drop-shadow(0 0 5px rgba(0, 255, 102, 0.3));
+  }
+  50% { 
+    filter: drop-shadow(0 0 15px rgba(0, 255, 102, 0.6));
+  }
+  100% { 
+    filter: drop-shadow(0 0 5px rgba(0, 255, 102, 0.3));
+  }
+}
+
+@keyframes valueLineGlow {
+  0% { 
+    filter: drop-shadow(0 0 5px rgba(9, 181, 218, 0.3));
+  }
+  50% { 
+    filter: drop-shadow(0 0 15px rgba(9, 181, 218, 0.6));
+  }
+  100% { 
+    filter: drop-shadow(0 0 5px rgba(9, 181, 218, 0.3));
+  }
 }
 
 @media (max-width: 768px) {
