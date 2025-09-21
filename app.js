@@ -67,8 +67,9 @@ function updateCalculations() {
   const totalCosts = managementFee + maintenanceCost;
 
   if (managementFee) {
-    animateValueWithNeonNumbers('udlejning', managementFee, 'Udlejningsselskab (20%)');
-    animateValueWithNeonNumbers('totalCost', totalCosts, 'Samlede omkostninger');
+    // Keep costs in blue color (no neon)
+    animateValue('udlejning', managementFee, 'Udlejningsselskab (20%)');
+    animateValue('totalCost', totalCosts, 'Samlede omkostninger');
     drawPieChart([revenue - totalCosts, managementFee, maintenanceCost]);
   }
 
@@ -146,6 +147,34 @@ function updateCurrencyConversion(rental, valueAppreciation, total) {
   document.getElementById('totalDKK').textContent = `${totalDKK.toLocaleString('da-DK')} DKK`;
 }
 
+// Standard blue animation for costs
+function animateValue(id, targetValue, labelText, suffix = ' EUR') {
+  const element = document.getElementById(id);
+  if (!element) return;
+
+  element.classList.add('counting-animation');
+  
+  let currentValue = 0;
+  const increment = targetValue / 80;
+  const duration = 1200;
+  const stepTime = duration / 80;
+
+  const interval = setInterval(() => {
+    currentValue += increment;
+    if (currentValue >= targetValue) {
+      clearInterval(interval);
+      currentValue = targetValue;
+      setTimeout(() => {
+        element.classList.remove('counting-animation');
+      }, 200);
+    }
+    
+    const displayValue = Math.round(currentValue);
+    element.textContent = `${labelText}: ${displayValue.toLocaleString('da-DK')}${suffix}`;
+  }, stepTime);
+}
+
+// Neon animation for income/returns
 function animateValueWithNeonNumbers(id, targetValue, labelText, suffix = ' EUR') {
   const element = document.getElementById(id);
   if (!element) return;
