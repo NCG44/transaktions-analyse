@@ -48,7 +48,7 @@ document.getElementById('name').addEventListener('input', function () {
 
 let pieChart, rentalChart, valueChart;
 
-['prisPrNat', 'lejedeNaetter', 'diskonto'].forEach(id =>
+['prisPrNat', 'lejedeNaetter', 'diskonto', 'prisPaaEnhed'].forEach(id =>
   document.getElementById(id).addEventListener('input', updateCalculations)
 );
 
@@ -74,6 +74,13 @@ function updateCalculations() {
   const netRevenue = revenue - totalCosts;
   if (netRevenue) {
     animateValue('netto', netRevenue);
+  }
+
+  // Calculate Årligt afkast (Annual return percentage)
+  const unitPrice = +document.getElementById('prisPaaEnhed').value || 0;
+  if (netRevenue && unitPrice) {
+    const annualReturn = (netRevenue / unitPrice) * 100;
+    animateValue('aarligtAfkast', annualReturn, '%');
   }
 
   const discountFactor = +document.getElementById('diskonto').value || 0;
@@ -140,7 +147,7 @@ function animateValue(id, targetValue, suffix = ' EUR') {
       }, 200);
     }
     
-    const displayValue = Math.round(currentValue);
+    const displayValue = suffix === '%' ? Math.round(currentValue * 100) / 100 : Math.round(currentValue);
     const label = element.textContent.split(':')[0];
     element.textContent = `${label}: ${displayValue.toLocaleString('da-DK')}${suffix}`;
   }, stepTime);
