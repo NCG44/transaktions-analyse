@@ -222,6 +222,34 @@ input:focus {
   text-shadow: 0 0 15px var(--neon-green) !important;
 }
 
+.market-comparison {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 1rem 0 1.5rem 0;
+  padding: 0.8rem;
+  border-radius: 8px;
+  background: rgba(12, 60, 96, 0.1);
+  border: 1px solid rgba(9, 181, 218, 0.2);
+}
+
+.market-comparison.positive {
+  color: var(--neon-green);
+  border-color: var(--neon-green);
+  background: rgba(0, 255, 102, 0.05);
+}
+
+.market-comparison.negative {
+  color: #ff6b6b;
+  border-color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.05);
+}
+
+.market-comparison.neutral {
+  color: var(--light-blue);
+  border-color: var(--light-blue);
+}
+
 .cost-percentage {
   text-align: center;
   font-size: 1.2rem;
