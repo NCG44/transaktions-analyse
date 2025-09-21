@@ -6,6 +6,7 @@ const crumbs = document.querySelectorAll('.crumb');
 
 // EUR to DKK conversion rate
 const EUR_TO_DKK = 7.44;
+const MARKET_AVERAGE = 7.5; // Market average percentage
 
 // Intersection Observer for scroll animations
 const observerOptions = {
@@ -58,7 +59,7 @@ function updateCalculations() {
   const revenue = pricePerNight * rentedNights;
 
   if (revenue) {
-    animateValue('brutto', revenue);
+    animateValueWithNeonNumbers('brutto', revenue, 'Brutto lejeindtægter');
   }
 
   const managementFee = revenue * 0.2;
@@ -66,21 +67,24 @@ function updateCalculations() {
   const totalCosts = managementFee + maintenanceCost;
 
   if (managementFee) {
-    animateValue('udlejning', managementFee);
-    animateValue('totalCost', totalCosts);
+    animateValueWithNeonNumbers('udlejning', managementFee, 'Udlejningsselskab (20%)');
+    animateValueWithNeonNumbers('totalCost', totalCosts, 'Samlede omkostninger');
     drawPieChart([revenue - totalCosts, managementFee, maintenanceCost]);
   }
 
   const netRevenue = revenue - totalCosts;
   if (netRevenue) {
-    animateValue('netto', netRevenue);
+    animateValueWithNeonNumbers('netto', netRevenue, 'Netto lejeindtægt');
   }
 
   // Calculate Årligt afkast (Annual return percentage)
   const unitPrice = +document.getElementById('prisPaaEnhed').value || 0;
   if (netRevenue && unitPrice) {
     const annualReturn = (netRevenue / unitPrice) * 100;
-    animateValue('aarligtAfkast', annualReturn, '%');
+    animateValueWithNeonNumbers('aarligtAfkast', annualReturn, 'Årligt afkast', '%');
+    
+    // Add market comparison
+    updateMarketComparison(annualReturn);
   }
 
   const discountFactor = +document.getElementById('diskonto').value || 0;
@@ -89,24 +93,40 @@ function updateCalculations() {
   if (discountFactor && netRevenue) {
     // Exit price calculation: net annual income / discount rate
     const projectedExitPrice = (netRevenue / (discountFactor / 100));
-    animateValue('exitPrice', projectedExitPrice);
+    animateValueWithNeonNumbers('exitPrice', projectedExitPrice, 'Projekteret exit pris');
 
     // Værdiforøgelse calculation: exit price - initial investment (assume 143,000)
     const deltaValue = projectedExitPrice - 143000;
-    animateValue('delta', deltaValue);
+    animateValueWithNeonNumbers('delta', deltaValue, 'Værdiforøgelse/Delta');
 
     const cashflow3Years = netRevenue * 3;
-    animateValueWithNeonNumbers('cash3', cashflow3Years, 'Cashflow (3 år)'); // Special neon function
+    animateValueWithNeonNumbers('cash3', cashflow3Years, 'Cashflow (3 år)');
 
     const totalReturn = cashflow3Years + deltaValue;
-    animateValueWithNeonNumbers('totalReturn', totalReturn, 'TOTALT AFKAST'); // Special neon function
-    animateValueWithNeonNumbers('finalTotalReturn', totalReturn, 'TOTALT AFKAST'); // Special neon function
+    animateValueWithNeonNumbers('totalReturn', totalReturn, 'TOTALT AFKAST');
+    animateValueWithNeonNumbers('finalTotalReturn', totalReturn, 'TOTALT AFKAST');
 
     // Update currency conversion
     updateCurrencyConversion(cashflow3Years, deltaValue, totalReturn);
   } else {
     // Reset værdiforøgelse if no discount factor
     document.getElementById('delta').textContent = 'Værdiforøgelse/Delta: 0 EUR';
+  }
+}
+
+function updateMarketComparison(annualReturn) {
+  const difference = Math.abs(annualReturn - MARKET_AVERAGE);
+  const comparisonElement = document.getElementById('markedsSammenligning');
+  
+  if (annualReturn > MARKET_AVERAGE) {
+    comparisonElement.textContent = `Årligt afkast er ${difference.toFixed(1)}% højere end nuværende markedsgennemsnit`;
+    comparisonElement.className = 'market-comparison positive';
+  } else if (annualReturn < MARKET_AVERAGE) {
+    comparisonElement.textContent = `Årligt afkast er ${difference.toFixed(1)}% mindre end nuværende markedsgennemsnit`;
+    comparisonElement.className = 'market-comparison negative';
+  } else {
+    comparisonElement.textContent = `Årligt afkast er på niveau med nuværende markedsgennemsnit`;
+    comparisonElement.className = 'market-comparison neutral';
   }
 }
 
@@ -124,33 +144,6 @@ function updateCurrencyConversion(rental, valueAppreciation, total) {
   document.getElementById('rentalDKK').textContent = `${rentalDKK.toLocaleString('da-DK')} DKK`;
   document.getElementById('valueDKK').textContent = `${valueDKK.toLocaleString('da-DK')} DKK`;
   document.getElementById('totalDKK').textContent = `${totalDKK.toLocaleString('da-DK')} DKK`;
-}
-
-function animateValue(id, targetValue, suffix = ' EUR') {
-  const element = document.getElementById(id);
-  if (!element) return;
-
-  element.classList.add('counting-animation');
-  
-  let currentValue = 0;
-  const increment = targetValue / 80;
-  const duration = 1200;
-  const stepTime = duration / 80;
-
-  const interval = setInterval(() => {
-    currentValue += increment;
-    if (currentValue >= targetValue) {
-      clearInterval(interval);
-      currentValue = targetValue;
-      setTimeout(() => {
-        element.classList.remove('counting-animation');
-      }, 200);
-    }
-    
-    const displayValue = suffix === '%' ? Math.round(currentValue * 100) / 100 : Math.round(currentValue);
-    const label = element.textContent.split(':')[0];
-    element.textContent = `${label}: ${displayValue.toLocaleString('da-DK')}${suffix}`;
-  }, stepTime);
 }
 
 function animateValueWithNeonNumbers(id, targetValue, labelText, suffix = ' EUR') {
@@ -173,11 +166,11 @@ function animateValueWithNeonNumbers(id, targetValue, labelText, suffix = ' EUR'
       setTimeout(() => {
         element.classList.remove('counting-animation');
         // Apply the neon number styling
-        const displayValue = Math.round(currentValue);
+        const displayValue = suffix === '%' ? Math.round(currentValue * 100) / 100 : Math.round(currentValue);
         element.innerHTML = `<span class="label-text">${labelText}:</span> <span class="neon-number">${displayValue.toLocaleString('da-DK')}${suffix}</span>`;
       }, 200);
     } else {
-      const displayValue = Math.round(currentValue);
+      const displayValue = suffix === '%' ? Math.round(currentValue * 100) / 100 : Math.round(currentValue);
       element.textContent = `${labelText}: ${displayValue.toLocaleString('da-DK')}${suffix}`;
     }
   }, stepTime);
