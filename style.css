@@ -46,17 +46,25 @@ body {
 
 .logo-container {
   margin-bottom: 1rem;
+  text-align: center;
 }
 
 .logo {
   width: 80px;
   height: 60px;
   object-fit: contain;
-  display: block;
+  display: block !important;
   margin: 0 auto;
   filter: contrast(200%) brightness(150%) drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
   mix-blend-mode: screen;
   background: transparent;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* Fallback if logo doesn't load */
+.logo:not([src]), .logo[src=""], .logo:not([src]:not([src=""])) {
+  display: none;
 }
 
 .header h1 {
