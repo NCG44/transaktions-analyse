@@ -493,5 +493,4 @@ function drawValueChart(deltaValue) {
   });
 }
 
-// Initialize
-updateCalculations();
+//
