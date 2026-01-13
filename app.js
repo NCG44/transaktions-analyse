@@ -96,8 +96,8 @@ function updateCalculations() {
     const projectedExitPrice = (netRevenue / (discountFactor / 100));
     animateValueWithNeonNumbers('exitPrice', projectedExitPrice, 'Projekteret exit pris');
 
-    // Værdiforøgelse calculation: exit price - initial investment (assume 143,000)
-    const deltaValue = projectedExitPrice - 143000;
+    // Værdiforøgelse calculation: exit price - initial investment (assume 170,000)
+    const deltaValue = projectedExitPrice - 170000;
     animateValueWithNeonNumbers('delta', deltaValue, 'Værdiforøgelse/Delta');
 
     const cashflow3Years = netRevenue * 3;
