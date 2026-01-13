@@ -380,7 +380,7 @@ function drawValueChart(deltaValue) {
   if (valueChart) valueChart.destroy();
   
   // Create curved growth data points from 2025 to 2027 only
-  const baseValue = 143000; // Starting property value
+  const baseValue = 170000; // Starting property value
   const finalValue = baseValue + deltaValue; // Final property value
   
   // Generate curved growth from 2025 to 2027
